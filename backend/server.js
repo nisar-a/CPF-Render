@@ -10,6 +10,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Health check / root route
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'CPF Backend API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'choosekonguengineeringcollegeforbestfuture';
