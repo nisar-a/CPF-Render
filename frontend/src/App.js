@@ -4,7 +4,11 @@ import NotificationsProvider, { useNotification } from './Notifications';
 import './App.css';
 import logo from './logo.jpeg';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://cpf-topaz.vercel.app/api';
+// Use environment variable or default to production backend
+const API_URL = process.env.REACT_APP_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://cpf-backend1.onrender.com/api' 
+    : 'http://localhost:5000/api');
 
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
@@ -98,7 +102,7 @@ function Login({ setUser }) {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}login`, { rollNumber, password });
+      const response = await axios.post(`${API_URL}/login`, { rollNumber, password });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       setUser(response.data.user);
