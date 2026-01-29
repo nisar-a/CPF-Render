@@ -27,10 +27,7 @@ services:
     staticPublishPath: ./frontend/build
     envVars:
       - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: cpf-backend
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://cpf-backend1.onrender.com/api
     routes:
       - type: rewrite
         source: /*
