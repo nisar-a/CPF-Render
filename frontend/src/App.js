@@ -1584,6 +1584,7 @@ function StudentsManagement() {
   const [tests, setTests] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [riasecFilter, setRiasecFilter] = useState('ALL');
+  const [uploadProgress, setUploadProgress] = useState(null); // { current, total, created, updated, skipped }
   const { notify, confirm } = useNotification();
 
   useEffect(() => {
@@ -1655,14 +1656,70 @@ function StudentsManagement() {
 
   const handleUploadStudents = async () => {
     if (!studentFile) return notify('Select a file first', 'error');
+    
     const fd = new FormData();
     fd.append('file', studentFile);
+    
+    // Reset progress
+    setUploadProgress({ current: 0, total: 0, created: 0, updated: 0, skipped: 0 });
+    
     try {
-      await axios.post(`${API_URL}/admin/students/upload`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      notify('Upload complete', 'success');
-      fetchStudents();
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/admin/students/upload`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'text/event-stream',
+          'Authorization': `Bearer ${token}`
+        },
+        body: fd
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.done) {
+                // Upload complete
+                setUploadProgress(null);
+                setStudentFile(null);
+                notify(`Upload complete: ${data.details.created} created, ${data.details.updated} updated, ${data.details.skipped} skipped`, 'success');
+                fetchStudents();
+              } else {
+                // Progress update
+                setUploadProgress({
+                  current: data.current,
+                  total: data.total,
+                  created: data.created,
+                  updated: data.updated,
+                  skipped: data.skipped
+                });
+              }
+            } catch (e) {
+              console.warn('Failed to parse SSE data:', e);
+            }
+          }
+        }
+      }
     } catch (err) {
-      notify(err.response?.data?.error || 'Upload failed', 'error');
+      setUploadProgress(null);
+      notify(err.message || 'Upload failed', 'error');
     }
   };
   const downloadResult = (student, result) => {
@@ -1811,9 +1868,28 @@ function StudentsManagement() {
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden md:flex gap-2 items-center">
-              <input type="file" accept=".xlsx,.csv" onChange={handleStudentFileChange} className="text-sm" />
-              <button onClick={handleUploadStudents} className="px-4 py-2 bg-green-500 text-white rounded-lg">Upload Students</button>
+              <input type="file" accept=".xlsx,.csv" onChange={handleStudentFileChange} className="text-sm" disabled={uploadProgress !== null} />
+              <button onClick={handleUploadStudents} disabled={uploadProgress !== null} className={`px-4 py-2 rounded-lg ${uploadProgress !== null ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500'} text-white`}>
+                {uploadProgress !== null ? 'Uploading...' : 'Upload Students'}
+              </button>
             </div>
+            {uploadProgress !== null && (
+              <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <div className="text-sm">
+                  <span className="font-bold text-blue-700">{uploadProgress.current}/{uploadProgress.total}</span>
+                  <span className="text-blue-600 ml-2">
+                    ({uploadProgress.created} new, {uploadProgress.updated} updated, {uploadProgress.skipped} skipped)
+                  </span>
+                </div>
+                <div className="w-32 bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all" 
+                    style={{ width: `${uploadProgress.total > 0 ? (uploadProgress.current / uploadProgress.total) * 100 : 0}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
             <button onClick={() => setShowAddStudent(s => !s)} className={`px-5 py-2 rounded-lg font-semibold ${showAddStudent ? 'bg-gray-600 text-white' : 'bg-indigo-600 text-white'}`}>{showAddStudent ? 'Cancel' : '+ Add Student'}</button>
           </div>
         </div>

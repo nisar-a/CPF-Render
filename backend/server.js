@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 const upload = multer({ storage: multer.memoryStorage() });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'choosekonguengineeringcollegeforbestfuture';
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://nisar:nisar%402004@cluster0.7q9px.mongodb.net/CPF?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://nisar:nisar2004@cluster0.7q9px.mongodb.net/CPF?retryWrites=true&w=majority';
 
 // MongoDB Connection
 mongoose.connect(MONGODB_URI, {
@@ -661,6 +661,7 @@ app.post('/api/admin/students', authenticateToken, isAdmin, async (req, res) => 
 });
 
 // Admin: bulk upload students via Excel/CSV (multipart/form-data, file field = 'file')
+// Streams progress updates via Server-Sent Events (SSE) for real-time progress display
 app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -669,25 +670,66 @@ app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single
     const sheetName = workbook.SheetNames[0];
     const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
-    const results = { created: 0, updated: 0, skipped: 0, errors: [] };
-    // We'll perform an existence-check and upsert in a single pass to count accurately
-    for (const [i, row] of rows.entries()) {
-      const norm = {};
-      Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
-      const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
-      const name = (norm.name && String(norm.name).trim()) || null;
-      const year = (norm.year && String(norm.year).trim()) || undefined;
-      const password = (norm.password && String(norm.password)) || 'student';
+    const total = rows.length;
+    
+    // Check if client wants streaming progress
+    const wantsStream = req.headers.accept && req.headers.accept.includes('text/event-stream');
+    
+    if (wantsStream) {
+      // Set up SSE headers
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders();
 
-      if (!rollNumber || !name) { results.skipped++; continue; }
+      const results = { created: 0, updated: 0, skipped: 0, errors: [] };
+      
+      for (const [i, row] of rows.entries()) {
+        const norm = {};
+        Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
+        const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
+        const name = (norm.name && String(norm.name).trim()) || null;
+        const year = (norm.year && String(norm.year).trim()) || undefined;
+        const password = (norm.password && String(norm.password)) || 'student';
 
-      const existed = await User.findOne({ rollNumber });
-      const hashed = await bcrypt.hash(password, 10);
-      await User.findOneAndUpdate({ rollNumber }, { rollNumber, name, password: hashed, year, role: 'student' }, { upsert: true, new: true, setDefaultsOnInsert: true });
-      if (existed) results.updated++; else results.created++;
+        if (!rollNumber || !name) { 
+          results.skipped++; 
+        } else {
+          const existed = await User.findOne({ rollNumber });
+          const hashed = await bcrypt.hash(password, 10);
+          await User.findOneAndUpdate({ rollNumber }, { rollNumber, name, password: hashed, year, role: 'student' }, { upsert: true, new: true, setDefaultsOnInsert: true });
+          if (existed) results.updated++; else results.created++;
+        }
+
+        // Send progress update
+        const progress = { current: i + 1, total, ...results };
+        res.write(`data: ${JSON.stringify(progress)}\n\n`);
+      }
+
+      // Send final complete message
+      res.write(`data: ${JSON.stringify({ done: true, message: 'Upload complete', details: results })}\n\n`);
+      res.end();
+    } else {
+      // Original non-streaming behavior
+      const results = { created: 0, updated: 0, skipped: 0, errors: [] };
+      for (const [i, row] of rows.entries()) {
+        const norm = {};
+        Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
+        const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
+        const name = (norm.name && String(norm.name).trim()) || null;
+        const year = (norm.year && String(norm.year).trim()) || undefined;
+        const password = (norm.password && String(norm.password)) || 'student';
+
+        if (!rollNumber || !name) { results.skipped++; continue; }
+
+        const existed = await User.findOne({ rollNumber });
+        const hashed = await bcrypt.hash(password, 10);
+        await User.findOneAndUpdate({ rollNumber }, { rollNumber, name, password: hashed, year, role: 'student' }, { upsert: true, new: true, setDefaultsOnInsert: true });
+        if (existed) results.updated++; else results.created++;
+      }
+
+      res.json({ message: 'Upload complete', details: results });
     }
-
-    res.json({ message: 'Upload complete', details: results });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
