@@ -695,14 +695,37 @@ app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single
         const validStudents = [];
         for (const row of batch) {
           const norm = {};
-          Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
-          const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
-          const name = (norm.name && String(norm.name).trim()) || null;
-          const year = (norm.year && String(norm.year).trim()) || undefined;
-          const password = (norm.password && String(norm.password)) || 'student';
+          Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim().replace(/[\s_-]+/g, '')] = row[k]; });
+          
+          // Flexible column matching for rollNumber
+          const rollNumber = (
+            norm.rollnumber || norm.rollno || norm.roll || 
+            norm.registernumber || norm.regno || norm.regnum || norm.reg ||
+            norm.studentid || norm.id || norm.admissionno
+          ) && String(
+            norm.rollnumber || norm.rollno || norm.roll || 
+            norm.registernumber || norm.regno || norm.regnum || norm.reg ||
+            norm.studentid || norm.id || norm.admissionno
+          ).trim();
+          
+          // Flexible column matching for name
+          const name = (
+            norm.name || norm.studentname || norm.fullname || 
+            norm.student || norm.studname
+          ) && String(
+            norm.name || norm.studentname || norm.fullname || 
+            norm.student || norm.studname
+          ).trim();
+          
+          const year = (norm.year || norm.yr || norm.batch || norm.class) && String(norm.year || norm.yr || norm.batch || norm.class).trim();
+          const password = (norm.password || norm.pwd || norm.pass) && String(norm.password || norm.pwd || norm.pass) || 'student';
 
           if (!rollNumber || !name) {
             results.skipped++;
+            // Log first few skipped rows for debugging
+            if (results.skipped <= 3) {
+              console.log('Skipped row - columns found:', Object.keys(norm), 'rollNumber:', rollNumber, 'name:', name);
+            }
           } else {
             validStudents.push({ rollNumber, name, year, password });
           }
@@ -760,14 +783,36 @@ app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single
         const validStudents = [];
         for (const row of batch) {
           const norm = {};
-          Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
-          const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
-          const name = (norm.name && String(norm.name).trim()) || null;
-          const year = (norm.year && String(norm.year).trim()) || undefined;
-          const password = (norm.password && String(norm.password)) || 'student';
+          Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim().replace(/[\s_-]+/g, '')] = row[k]; });
+          
+          // Flexible column matching for rollNumber
+          const rollNumber = (
+            norm.rollnumber || norm.rollno || norm.roll || 
+            norm.registernumber || norm.regno || norm.regnum || norm.reg ||
+            norm.studentid || norm.id || norm.admissionno
+          ) && String(
+            norm.rollnumber || norm.rollno || norm.roll || 
+            norm.registernumber || norm.regno || norm.regnum || norm.reg ||
+            norm.studentid || norm.id || norm.admissionno
+          ).trim();
+          
+          // Flexible column matching for name
+          const name = (
+            norm.name || norm.studentname || norm.fullname || 
+            norm.student || norm.studname
+          ) && String(
+            norm.name || norm.studentname || norm.fullname || 
+            norm.student || norm.studname
+          ).trim();
+          
+          const year = (norm.year || norm.yr || norm.batch || norm.class) && String(norm.year || norm.yr || norm.batch || norm.class).trim();
+          const password = (norm.password || norm.pwd || norm.pass) && String(norm.password || norm.pwd || norm.pass) || 'student';
 
           if (!rollNumber || !name) {
             results.skipped++;
+            if (results.skipped <= 3) {
+              console.log('Skipped row - columns found:', Object.keys(norm), 'rollNumber:', rollNumber, 'name:', name);
+            }
           } else {
             validStudents.push({ rollNumber, name, year, password });
           }
