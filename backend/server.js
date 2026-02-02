@@ -661,6 +661,7 @@ app.post('/api/admin/students', authenticateToken, isAdmin, async (req, res) => 
 });
 
 // Admin: bulk upload students via Excel/CSV (multipart/form-data, file field = 'file')
+// OPTIMIZED: Uses batch processing with bulkWrite for 3000+ students
 // Streams progress updates via Server-Sent Events (SSE) for real-time progress display
 app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single('file'), async (req, res) => {
   try {
@@ -671,6 +672,8 @@ app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single
     const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
     const total = rows.length;
+    const BATCH_SIZE = 100; // Process 100 students at a time
+    const BCRYPT_ROUNDS = 8; // Reduced from 10 for faster hashing (still secure)
     
     // Check if client wants streaming progress
     const wantsStream = req.headers.accept && req.headers.accept.includes('text/event-stream');
@@ -684,25 +687,62 @@ app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single
 
       const results = { created: 0, updated: 0, skipped: 0, errors: [] };
       
-      for (const [i, row] of rows.entries()) {
-        const norm = {};
-        Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
-        const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
-        const name = (norm.name && String(norm.name).trim()) || null;
-        const year = (norm.year && String(norm.year).trim()) || undefined;
-        const password = (norm.password && String(norm.password)) || 'student';
+      // Process in batches
+      for (let batchStart = 0; batchStart < rows.length; batchStart += BATCH_SIZE) {
+        const batch = rows.slice(batchStart, batchStart + BATCH_SIZE);
+        
+        // Parse and validate all rows in batch
+        const validStudents = [];
+        for (const row of batch) {
+          const norm = {};
+          Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
+          const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
+          const name = (norm.name && String(norm.name).trim()) || null;
+          const year = (norm.year && String(norm.year).trim()) || undefined;
+          const password = (norm.password && String(norm.password)) || 'student';
 
-        if (!rollNumber || !name) { 
-          results.skipped++; 
-        } else {
-          const existed = await User.findOne({ rollNumber });
-          const hashed = await bcrypt.hash(password, 10);
-          await User.findOneAndUpdate({ rollNumber }, { rollNumber, name, password: hashed, year, role: 'student' }, { upsert: true, new: true, setDefaultsOnInsert: true });
-          if (existed) results.updated++; else results.created++;
+          if (!rollNumber || !name) {
+            results.skipped++;
+          } else {
+            validStudents.push({ rollNumber, name, year, password });
+          }
+        }
+
+        // Hash passwords in parallel for this batch
+        const hashedStudents = await Promise.all(
+          validStudents.map(async (s) => ({
+            ...s,
+            password: await bcrypt.hash(s.password, BCRYPT_ROUNDS)
+          }))
+        );
+
+        // Check which students already exist (single query)
+        const rollNumbers = hashedStudents.map(s => s.rollNumber);
+        const existingUsers = await User.find({ rollNumber: { $in: rollNumbers } }).select('rollNumber').lean();
+        const existingSet = new Set(existingUsers.map(u => u.rollNumber));
+
+        // Build bulk operations
+        const bulkOps = hashedStudents.map(s => ({
+          updateOne: {
+            filter: { rollNumber: s.rollNumber },
+            update: { $set: { rollNumber: s.rollNumber, name: s.name, password: s.password, year: s.year, role: 'student' } },
+            upsert: true
+          }
+        }));
+
+        // Execute bulk write
+        if (bulkOps.length > 0) {
+          const bulkResult = await User.bulkWrite(bulkOps, { ordered: false });
+          results.created += bulkResult.upsertedCount || 0;
+          results.updated += bulkResult.modifiedCount || 0;
+          // Also count matched but not modified as updated (same data)
+          const matchedNotModified = (bulkResult.matchedCount || 0) - (bulkResult.modifiedCount || 0);
+          if (matchedNotModified > 0) results.updated += matchedNotModified;
         }
 
         // Send progress update
-        const progress = { current: i + 1, total, ...results };
+        const processed = Math.min(batchStart + BATCH_SIZE, total);
+        const progress = { current: processed, total, ...results };
         res.write(`data: ${JSON.stringify(progress)}\n\n`);
       }
 
@@ -710,27 +750,60 @@ app.post('/api/admin/students/upload', authenticateToken, isAdmin, upload.single
       res.write(`data: ${JSON.stringify({ done: true, message: 'Upload complete', details: results })}\n\n`);
       res.end();
     } else {
-      // Original non-streaming behavior
+      // Non-streaming behavior - also optimized with batching
       const results = { created: 0, updated: 0, skipped: 0, errors: [] };
-      for (const [i, row] of rows.entries()) {
-        const norm = {};
-        Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
-        const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
-        const name = (norm.name && String(norm.name).trim()) || null;
-        const year = (norm.year && String(norm.year).trim()) || undefined;
-        const password = (norm.password && String(norm.password)) || 'student';
+      
+      for (let batchStart = 0; batchStart < rows.length; batchStart += BATCH_SIZE) {
+        const batch = rows.slice(batchStart, batchStart + BATCH_SIZE);
+        
+        // Parse and validate all rows in batch
+        const validStudents = [];
+        for (const row of batch) {
+          const norm = {};
+          Object.keys(row).forEach(k => { norm[k.toString().toLowerCase().trim()] = row[k]; });
+          const rollNumber = (norm.rollnumber || norm.roll_number || norm.roll) && String(norm.rollnumber || norm.roll_number || norm.roll).trim();
+          const name = (norm.name && String(norm.name).trim()) || null;
+          const year = (norm.year && String(norm.year).trim()) || undefined;
+          const password = (norm.password && String(norm.password)) || 'student';
 
-        if (!rollNumber || !name) { results.skipped++; continue; }
+          if (!rollNumber || !name) {
+            results.skipped++;
+          } else {
+            validStudents.push({ rollNumber, name, year, password });
+          }
+        }
 
-        const existed = await User.findOne({ rollNumber });
-        const hashed = await bcrypt.hash(password, 10);
-        await User.findOneAndUpdate({ rollNumber }, { rollNumber, name, password: hashed, year, role: 'student' }, { upsert: true, new: true, setDefaultsOnInsert: true });
-        if (existed) results.updated++; else results.created++;
+        // Hash passwords in parallel for this batch
+        const hashedStudents = await Promise.all(
+          validStudents.map(async (s) => ({
+            ...s,
+            password: await bcrypt.hash(s.password, BCRYPT_ROUNDS)
+          }))
+        );
+
+        // Build bulk operations
+        const bulkOps = hashedStudents.map(s => ({
+          updateOne: {
+            filter: { rollNumber: s.rollNumber },
+            update: { $set: { rollNumber: s.rollNumber, name: s.name, password: s.password, year: s.year, role: 'student' } },
+            upsert: true
+          }
+        }));
+
+        // Execute bulk write
+        if (bulkOps.length > 0) {
+          const bulkResult = await User.bulkWrite(bulkOps, { ordered: false });
+          results.created += bulkResult.upsertedCount || 0;
+          results.updated += bulkResult.modifiedCount || 0;
+          const matchedNotModified = (bulkResult.matchedCount || 0) - (bulkResult.modifiedCount || 0);
+          if (matchedNotModified > 0) results.updated += matchedNotModified;
+        }
       }
 
       res.json({ message: 'Upload complete', details: results });
     }
   } catch (err) {
+    console.error('Bulk upload error:', err);
     res.status(500).json({ error: err.message });
   }
 });
