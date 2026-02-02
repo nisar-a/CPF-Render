@@ -58,22 +58,30 @@ function App() {
   return (
     <NotificationsProvider>
       <div className="min-h-screen bg-gray-50">
-        <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              <h1 className="text-lg font-bold">Core Assessment - Career Test (Holland  code - based)</h1>
+              <h1 className="text-sm sm:text-lg font-bold truncate">Career Assessment</h1>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm hidden md:inline">{user.name}</span>
+            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+              <div className="hidden sm:flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full">
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-semibold">
+                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <span className="text-sm">{user.name}</span>
+              </div>
               <button
                 onClick={handleLogout}
-                className="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition"
+                className="bg-white/20 hover:bg-white/30 active:bg-white/40 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5"
               >
-                Logout
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
@@ -114,93 +122,149 @@ function Login({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex">
-      {/* Left Side - College Logo */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 text-white">
-        <div className="max-w-md text-center">
-          <img 
-                src={logo}
-                alt="College Logo" 
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextElementSibling.style.display = 'block';
-                }}
-              />
-          <h1 className="text-4xl font-bold mb-4 mt-4">Student counselling Cell</h1>
-          <h2 className="text-4xl font-bold mb-4">Student Wellbeing Assessment Framework</h2>
-          <p className="text-lg text-white/90 mb-6">Discover your ideal career path with our comprehensive assessment tools</p>
-          <div className="space-y-2 text-sm text-white/80">
-            <p></p>
-            <p></p>
-            <p></p>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-purple-600 flex flex-col lg:flex-row">
+      {/* Left Side - College Logo (Hidden on mobile, shown on large screens) */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-8 xl:p-12 text-white">
+        <div className="max-w-lg text-center animate-fadeIn">
+          <div className="mb-6">
+            <img 
+              src={logo}
+              alt="College Logo" 
+              className="mx-auto max-h-32 xl:max-h-40 rounded-2xl shadow-2xl"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'block';
+              }}
+            />
+            <div className="hidden w-24 h-24 mx-auto bg-white/20 rounded-2xl flex items-center justify-center text-4xl">
+              🎓
+            </div>
+          </div>
+          <h1 className="text-3xl xl:text-4xl font-bold mb-3">Student Counselling Cell</h1>
+          <h2 className="text-2xl xl:text-3xl font-semibold mb-4 text-white/95">Student Wellbeing Assessment Framework</h2>
+          <p className="text-base xl:text-lg text-white/85 mb-8">Discover your ideal career path with our comprehensive assessment tools</p>
+          
+          {/* Feature highlights */}
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="text-2xl mb-2">🎯</div>
+              <p className="text-xs font-medium">Career Guidance</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="text-2xl mb-2">📊</div>
+              <p className="text-xs font-medium">Detailed Reports</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="text-2xl mb-2">💡</div>
+              <p className="text-xs font-medium">Personalized Insights</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-12">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-          <div className="text-center mb-6">
-            <div className="inline-block bg-indigo-100 p-3 rounded-full mb-3">
-              <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-12 min-h-screen lg:min-h-0">
+        {/* Mobile header - show on small screens only */}
+        <div className="absolute top-0 left-0 right-0 p-4 lg:hidden">
+          <div className="flex items-center justify-center gap-3 text-white">
+            <img 
+              src={logo}
+              alt="Logo" 
+              className="w-10 h-10 rounded-lg shadow-lg object-cover"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+            <span className="font-bold text-lg">Career Assessment</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md animate-slideUp mt-16 lg:mt-0">
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl mb-4 shadow-inner">
+              <svg className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">Career Assessment</h1>
-            <p className="text-gray-600 text-sm">Discover Your Ideal Path</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Welcome Back</h1>
+            <p className="text-gray-500 text-sm sm:text-base mt-1">Sign in to continue your journey</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Roll Number</label>
-            <input
-              type="text"
-              value={rollNumber}
-              onChange={(e) => setRollNumber(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              placeholder="Enter roll number"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              placeholder="Enter password"
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
-              {error}
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Roll Number</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value={rollNumber}
+                  onChange={(e) => setRollNumber(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 sm:py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base"
+                  placeholder="Enter your roll number"
+                  required
+                />
+              </div>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2.5 rounded-lg transition disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-            <p className="text-xs font-semibold text-gray-700 mb-2">Demo Accounts</p>
-            <div className="space-y-1 text-xs text-gray-600">
-              {/* <p><span className="font-mono bg-white px-2 py-0.5 rounded">ADMIN001</span> / <span className="font-mono bg-white px-2 py-0.5 rounded">admin123</span></p>
-              <p><span className="font-mono bg-white px-2 py-0.5 rounded">MB001</span> / <span className="font-mono bg-white px-2 py-0.5 rounded">student</span></p> */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 sm:py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
             </div>
+
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2 animate-fadeIn">
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 sm:py-3.5 rounded-xl transition-all disabled:opacity-50 shadow-lg hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-2 text-base"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Help text for mobile */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-gray-500">
+              Need help? Contact your administrator
+            </p>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }
@@ -223,49 +287,92 @@ function StudentDashboard({ user }) {
     }
   };
 
+  const navItems = [
+    { key: 'home', label: 'Dashboard', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    )},
+    { key: 'test', label: 'Assessment', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+    )},
+    { key: 'settings', label: 'Settings', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    )}
+  ];
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="mb-6 flex flex-wrap gap-3">
-        <button
-          onClick={() => setView('home')}
-          className={`px-6 py-2 rounded-lg font-medium transition ${
-            view === 'home' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          Dashboard
-        </button>
-        <button
-          onClick={() => setView('test')}
-          className={`px-6 py-2 rounded-lg font-medium transition ${
-            view === 'test' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          Take Assessment
-        </button>
-        <button
-          onClick={() => setView('settings')}
-          className={`px-6 py-2 rounded-lg font-medium transition ${
-            view === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          Settings
-        </button>
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-20 sm:pb-6">
+      {/* Desktop Navigation Tabs */}
+      <div className="hidden sm:flex mb-6 gap-2 bg-white/50 p-1.5 rounded-xl backdrop-blur-sm">
+        {navItems.map(item => (
+          <button
+            key={item.key}
+            onClick={() => { setView(item.key); if (item.key !== 'test') setSelectedTest(null); }}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all ${
+              view === item.key 
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg' 
+                : 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow-md'
+            }`}
+          >
+            {item.icon}
+            {item.label}
+          </button>
+        ))}
       </div>
 
-      {view === 'home' && <StudentHome profile={profile} />}
-      {view === 'test' && (
-        !selectedTest ? (
-          <TestsList onSelect={(t) => setSelectedTest(t)} />
-        ) : (
-          <div>
-            <div className="mb-4">
-              <button onClick={() => setSelectedTest(null)} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">← Back to Tests</button>
+      {/* Mobile Bottom Navigation */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 z-50 safe-bottom">
+        <div className="flex justify-around items-center py-2 px-2">
+          {navItems.map(item => (
+            <button
+              key={item.key}
+              onClick={() => { setView(item.key); if (item.key !== 'test') setSelectedTest(null); }}
+              className={`mobile-nav-item flex-1 ${view === item.key ? 'active' : ''}`}
+            >
+              {item.icon}
+              <span className="text-xs mt-1 font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile Header for current section */}
+      <div className="sm:hidden mb-4">
+        <h2 className="text-xl font-bold text-gray-800">
+          {view === 'home' ? 'Dashboard' : view === 'test' ? 'Assessments' : 'Settings'}
+        </h2>
+      </div>
+
+      <div className="animate-fadeIn">
+        {view === 'home' && <StudentHome profile={profile} />}
+        {view === 'test' && (
+          !selectedTest ? (
+            <TestsList onSelect={(t) => setSelectedTest(t)} />
+          ) : (
+            <div>
+              <div className="mb-4">
+                <button 
+                  onClick={() => setSelectedTest(null)} 
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white hover:bg-gray-50 shadow-sm border border-gray-200 text-gray-700 font-medium transition-all active:scale-95"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to Tests
+                </button>
+              </div>
+              <TestComponent profile={profile} fetchProfile={fetchProfile} testKey={selectedTest} />
             </div>
-            <TestComponent profile={profile} fetchProfile={fetchProfile} testKey={selectedTest} />
-          </div>
-        )
-      )}
-      {view === 'settings' && <StudentSettings />}
+          )
+        )}
+        {view === 'settings' && <StudentSettings />}
+      </div>
     </div>
   );
 }
@@ -313,40 +420,89 @@ function TestsList({ onSelect }) {
   if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600"></div></div>;
   if (tests.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-6 text-center">
-        <h3 className="text-lg font-bold mb-2">No tests available</h3>
-        <p className="text-sm text-gray-600 mb-4">{error || 'There are no tests configured on the server.'}</p>
-        <div className="flex justify-center gap-3">
-          <button onClick={() => onSelect('RIASEC')} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Take RIASEC (default)</button>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-gray-200 rounded-lg">Retry</button>
+      <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center animate-fadeIn">
+        <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold mb-2 text-gray-800">No tests available</h3>
+        <p className="text-sm text-gray-600 mb-6">{error || 'There are no tests configured on the server.'}</p>
+        <div className="flex flex-col sm:flex-row justify-center gap-3">
+          <button onClick={() => onSelect('RIASEC')} className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all active:scale-95">Take RIASEC (default)</button>
+          <button onClick={() => window.location.reload()} className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-all active:scale-95">Retry</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {tests.map(test => (
-        <div key={test.key} className="bg-white rounded-xl shadow p-5 border">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h3 className="text-lg font-bold">{test.name}</h3>
-              {profile && profile.testResults && profile.testResults.some(r => r.test === test.key) && (
-                <div className="inline-block mt-1 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded">Completed</div>
-              )}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {tests.map((test, index) => {
+        const isCompleted = profile && profile.testResults && profile.testResults.some(r => r.test === test.key);
+        const testIcons = {
+          'RIASEC': '🎯',
+          'Personality': '😊',
+          'Aptitude': '🧠',
+          'EI': '💭'
+        };
+        return (
+          <div 
+            key={test.key} 
+            className="bg-white rounded-2xl shadow-md hover:shadow-xl p-5 sm:p-6 border border-gray-100 card-hover animate-slideUp"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-2xl">
+                  {testIcons[test.key] || '📋'}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">{test.name}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{test.questionCount} Questions</span>
+                    {isCompleted && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full font-medium">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Done
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <span className="text-xs text-gray-500">{test.questionCount} Qs</span>
+            <p className="text-sm text-gray-600 mb-5 leading-relaxed">{test.description}</p>
+            <button 
+              onClick={() => onSelect(test.key)} 
+              className={`w-full py-3 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 ${
+                isCompleted 
+                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
+              }`}
+            >
+              {isCompleted ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View Result
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Start Test
+                </>
+              )}
+            </button>
           </div>
-          <p className="text-sm text-gray-600 mb-4">{test.description}</p>
-          <div className="flex justify-end">
-            {profile && profile.testResults && profile.testResults.some(r => r.test === test.key) ? (
-              <button onClick={() => onSelect(test.key)} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">View Result</button>
-            ) : (
-              <button onClick={() => onSelect(test.key)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Take Test</button>
-            )}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -373,26 +529,42 @@ function StudentHome({ profile }) {
   const sortedTestResults = [...testResults].sort((a, b) => new Date(b.completedAt || 0) - new Date(a.completedAt || 0));
   const riasecResults = sortedTestResults.filter(r => r.test === 'RIASEC');
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome to Your Career Portal</h2>
-        <p className="text-gray-600 text-sm">Based on the RIASEC (Holland Code) career assessment model</p>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Welcome Card */}
+      <div className="bg-gradient-to-br from-white to-indigo-50 rounded-2xl shadow-lg p-5 sm:p-8 border border-indigo-100 animate-fadeIn">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl sm:text-3xl shadow-lg flex-shrink-0">
+            👋
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Welcome, {profile.name?.split(' ')[0] || 'Student'}!</h2>
+            <p className="text-gray-600 text-sm sm:text-base mt-1">Discover your ideal career path with our assessments</p>
+          </div>
+        </div>
 
-        <div className="mt-4">
+        <div className="mt-5 sm:mt-6">
           {profile.hasCompletedTest ? (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-              <span className="text-2xl">✓</span>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
               <div>
                 <p className="text-green-800 font-semibold">Assessment Completed</p>
                 <p className="text-green-700 text-sm">Your career profile is ready below</p>
               </div>
             </div>
           ) : (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3">
-              <span className="text-2xl">📋</span>
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
               <div>
-                <p className="text-yellow-800 font-semibold">Ready to Begin?</p>
-                <p className="text-yellow-700 text-sm">Click "Take Assessment" to discover your career path</p>
+                <p className="text-amber-800 font-semibold">Ready to Begin?</p>
+                <p className="text-amber-700 text-sm">Tap "Assessment" below to start your journey</p>
               </div>
             </div>
           )}
@@ -657,9 +829,14 @@ function StudentHome({ profile }) {
 
       {/* Test history: show all saved test results */}
       {sortedTestResults.length > 0 && (
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h4 className="text-xl font-bold mb-4">Test History</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+          <h4 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
+            <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Test History
+          </h4>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
             {sortedTestResults.map((r, idx) => {
               const isPersonality = r.test === 'Personality';
               const isAptitude = r.test === 'Aptitude';
@@ -684,18 +861,33 @@ function StudentHome({ profile }) {
                 ? (r.globalScore !== undefined && r.globalScore !== null ? `Global Score: ${typeof r.globalScore === 'number' ? r.globalScore.toFixed(2) : r.globalScore}/7.0` : 'Global Score: —/7.0')
                 : `Top: ${r.topThree?.map(t => t.split(' - ')[0]).join(', ')}`;
 
+              const testIcons = {
+                'RIASEC': '🎯',
+                'Personality': '😊',
+                'Aptitude': '🧠',
+                'EI': '💭'
+              };
               
               return (
-                <div key={idx} className="border rounded-lg p-4 bg-gray-50">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold">{titleText}</div>
-                      <div className="text-sm text-gray-500">Completed: {new Date(r.completedAt).toLocaleString()}</div>
-                      <div className="mt-2 text-sm">{scoreText}</div>
+                <div key={idx} className="border-2 border-gray-100 rounded-xl p-4 bg-gradient-to-br from-gray-50 to-white hover:border-indigo-200 transition-all">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-lg flex-shrink-0">
+                      {testIcons[r.test] || '📋'}
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <button onClick={() => downloadResultForUser(r, profile)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-semibold">Download</button>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-gray-800 text-sm sm:text-base truncate">{titleText}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">{new Date(r.completedAt).toLocaleDateString()}</div>
+                      <div className="mt-2 text-sm font-medium text-indigo-600">{scoreText}</div>
                     </div>
+                    <button 
+                      onClick={() => downloadResultForUser(r, profile)} 
+                      className="flex-shrink-0 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center gap-1"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      <span className="hidden sm:inline">Download</span>
+                    </button>
                   </div>
                 </div>
               );
@@ -1049,65 +1241,71 @@ Your responses will help identify strengths and areas where additional support m
     const inst = getInstructions();
 
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-lg p-8 md:p-10">
+      <div className="max-w-4xl mx-auto animate-fadeIn">
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-8 md:p-10">
           {/* Header Section */}
-          <div className="text-center mb-8 pb-6 border-b-2 border-indigo-200">
-            <div className="text-6xl mb-4 animate-bounce">{inst.icon}</div>
-            <h2 className="text-4xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="text-center mb-6 sm:mb-8 pb-4 sm:pb-6 border-b-2 border-indigo-200">
+            <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">{inst.icon}</div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight">
               {inst.title}
             </h2>
             {inst.subtitle && (
-              <p className="text-xl text-indigo-700 font-semibold italic mt-2">{inst.subtitle}</p>
+              <p className="text-base sm:text-xl text-indigo-700 font-semibold italic mt-2">{inst.subtitle}</p>
             )}
           </div>
 
           {/* Main Content */}
-          <div className="mb-8">
-            <div className="bg-white border-l-4 border-indigo-600 rounded-lg p-6 mb-6 shadow-sm">
-              <p className="text-base leading-relaxed whitespace-pre-line text-gray-800 font-medium">
+          <div className="mb-6 sm:mb-8">
+            <div className="bg-white border-l-4 border-indigo-600 rounded-xl p-4 sm:p-6 mb-5 sm:mb-6 shadow-sm">
+              <p className="text-sm sm:text-base leading-relaxed whitespace-pre-line text-gray-800 font-medium">
                 {inst.fullText}
               </p>
             </div>
 
-            {/* Key Points Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                <div className="text-3xl mb-2">✓</div>
-                <p className="text-sm font-semibold text-green-800">Honest Responses</p>
-                <p className="text-xs text-green-700 mt-1">Be truthful and authentic</p>
+            {/* Key Points Section - Stack on mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-5 sm:mb-6">
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex sm:flex-col items-center sm:text-center gap-3 sm:gap-0">
+                <div className="text-2xl sm:text-3xl sm:mb-2">✓</div>
+                <div>
+                  <p className="text-sm font-semibold text-green-800">Honest Responses</p>
+                  <p className="text-xs text-green-700 mt-0.5 sm:mt-1">Be truthful and authentic</p>
+                </div>
               </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                <div className="text-3xl mb-2">⏱️</div>
-                <p className="text-sm font-semibold text-blue-800">Take Your Time</p>
-                <p className="text-xs text-blue-700 mt-1">No time pressure</p>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex sm:flex-col items-center sm:text-center gap-3 sm:gap-0">
+                <div className="text-2xl sm:text-3xl sm:mb-2">⏱️</div>
+                <div>
+                  <p className="text-sm font-semibold text-blue-800">Take Your Time</p>
+                  <p className="text-xs text-blue-700 mt-0.5 sm:mt-1">No time pressure</p>
+                </div>
               </div>
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
-                <div className="text-3xl mb-2">🎯</div>
-                <p className="text-sm font-semibold text-purple-800">Self-Discovery</p>
-                <p className="text-xs text-purple-700 mt-1">Meaningful insights</p>
+              <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex sm:flex-col items-center sm:text-center gap-3 sm:gap-0">
+                <div className="text-2xl sm:text-3xl sm:mb-2">🎯</div>
+                <div>
+                  <p className="text-sm font-semibold text-purple-800">Self-Discovery</p>
+                  <p className="text-xs text-purple-700 mt-0.5 sm:mt-1">Meaningful insights</p>
+                </div>
               </div>
             </div>
 
             {/* Important Notes */}
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-4 mb-6">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 mb-5 sm:mb-6">
               <p className="text-sm text-yellow-900 flex items-start gap-2">
-                <span className="text-lg">⚠️</span>
+                <span className="text-lg flex-shrink-0">⚠️</span>
                 <span><strong>Important:</strong> There are no right or wrong answers. Your honest responses will provide the most accurate and meaningful results.</span>
               </p>
             </div>
           </div>
 
           {/* Ready Checkbox */}
-          <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg p-5 mb-6 border border-indigo-300">
-            <label className="flex items-center cursor-pointer">
+          <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl p-4 sm:p-5 mb-5 sm:mb-6 border border-indigo-300">
+            <label className="flex items-center cursor-pointer gap-3">
               <input
                 type="checkbox"
                 checked={readyToStart}
                 onChange={(e) => setReadyToStart(e.target.checked)}
-                className="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 rounded-lg focus:ring-2 focus:ring-indigo-500 cursor-pointer flex-shrink-0"
               />
-              <span className="ml-3 text-gray-800 font-medium">
+              <span className="text-sm sm:text-base text-gray-800 font-medium">
                 I have read and understood the instructions above
               </span>
             </label>
@@ -1118,13 +1316,23 @@ Your responses will help identify strengths and areas where additional support m
             <button
               onClick={() => setShowInstructions(false)}
               disabled={!readyToStart}
-              className={`px-10 py-3 rounded-xl font-bold text-lg transition-all shadow-lg ${
+              className={`w-full sm:w-auto px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all shadow-lg ${
                 readyToStart
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 cursor-pointer transform hover:scale-105 active:scale-95'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 cursor-pointer hover:shadow-xl active:scale-[0.98]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {readyToStart ? '✨ Start Test' : 'Check the box to continue'}
+              {readyToStart ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span>✨</span>
+                  <span>Start Test</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              ) : (
+                'Check the box to continue'
+              )}
             </button>
             <p className="text-xs text-gray-600 mt-3">You can always go back to review these instructions later</p>
           </div>
@@ -1279,64 +1487,99 @@ Your responses will help identify strengths and areas where additional support m
   const progress = (answeredCount / questions.length) * 100;
 
   const sliderLabelsRIASEC = [
-    { value: 1, label: 'Strongly Disagree' },
-    { value: 2, label: 'Disagree' },
-    { value: 3, label: 'Neutral' },
-    { value: 4, label: 'Agree' },
-    { value: 5, label: 'Strongly Agree' }
+    { value: 1, label: 'Strongly Disagree', short: 'SD' },
+    { value: 2, label: 'Disagree', short: 'D' },
+    { value: 3, label: 'Neutral', short: 'N' },
+    { value: 4, label: 'Agree', short: 'A' },
+    { value: 5, label: 'Strongly Agree', short: 'SA' }
   ];
 
   const sliderLabelsEI = [
-    { value: 1, label: 'Completely Disagree' },
-    { value: 2, label: 'Disagree' },
-    { value: 3, label: 'Somewhat Disagree' },
-    { value: 4, label: 'Neutral' },
-    { value: 5, label: 'Somewhat Agree' },
-    { value: 6, label: 'Agree' },
-    { value: 7, label: 'Completely Agree' }
+    { value: 1, label: 'Completely Disagree', short: '1' },
+    { value: 2, label: 'Disagree', short: '2' },
+    { value: 3, label: 'Somewhat Disagree', short: '3' },
+    { value: 4, label: 'Neutral', short: '4' },
+    { value: 5, label: 'Somewhat Agree', short: '5' },
+    { value: 6, label: 'Agree', short: '6' },
+    { value: 7, label: 'Completely Agree', short: '7' }
   ];
 
   // Personality Inventory scale as requested: None → Rarely → Some → Often → All of the time
   const sliderLabelsPersonality = [
-    { value: 1, label: 'None of the time' },
-    { value: 2, label: 'Rarely' },
-    { value: 3, label: 'Some of the time' },
-    { value: 4, label: 'Often' },
-    { value: 5, label: 'All of the time' }
+    { value: 1, label: 'None of the time', short: 'None' },
+    { value: 2, label: 'Rarely', short: 'Rare' },
+    { value: 3, label: 'Some of the time', short: 'Some' },
+    { value: 4, label: 'Often', short: 'Often' },
+    { value: 5, label: 'All of the time', short: 'All' }
   ];
 
   return (
     <div className="max-w-5xl mx-auto md:flex md:items-start md:gap-6">
       <div className="flex-1">
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+      {/* Progress Header */}
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 animate-fadeIn">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-bold">{testTitle}</h2>
-          <span className="text-sm font-semibold text-indigo-600">
-            {currentIndex + 1} / {questions.length}
-          </span>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">{testTitle}</h2>
+          <div className="flex items-center gap-2">
+            <span className="text-xs sm:text-sm font-semibold text-indigo-600 bg-indigo-50 px-2 sm:px-3 py-1 rounded-full">
+              {currentIndex + 1} / {questions.length}
+            </span>
+          </div>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+        <div className="w-full bg-gray-100 rounded-full h-2 sm:h-3 overflow-hidden">
+          <div 
+            className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full transition-all duration-500 ease-out" 
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
-        <p className="text-xs text-gray-600 mt-2">{answeredCount} of {questions.length} answered</p>
+        <div className="flex justify-between mt-2">
+          <p className="text-xs text-gray-500">{answeredCount} answered</p>
+          <p className="text-xs text-gray-500">{questions.length - answeredCount} remaining</p>
+        </div>
       </div>
 
-      <div className={`bg-white rounded-xl shadow-md p-8 ${showUnansweredWarning ? 'border-4 border-red-400 bg-red-50' : ''}`}>
-        <div className="mb-8">
-          <div className="flex items-start gap-3 mb-6">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${showUnansweredWarning ? 'bg-red-500 text-white' : 'bg-indigo-600 text-white'}`}>
+      {/* Question Card */}
+      <div className={`bg-white rounded-2xl shadow-lg p-5 sm:p-8 animate-slideUp ${showUnansweredWarning ? 'ring-2 ring-red-400 bg-red-50/50' : ''}`}>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center font-bold flex-shrink-0 text-sm sm:text-base ${showUnansweredWarning ? 'bg-red-500 text-white' : 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg'}`}>
               {currentQuestion.questionNumber}
             </div>
-            <div className="flex-1">
-              <p className="text-lg font-medium text-gray-800 pt-1">{currentQuestion.text}</p>
-              {showUnansweredWarning && <p className="text-sm text-red-600 mt-2 font-semibold">⚠️ Please answer this question</p>}
+            <div className="flex-1 pt-1 sm:pt-2">
+              <p className="text-base sm:text-lg font-medium text-gray-800 leading-relaxed">{currentQuestion.text}</p>
+              {showUnansweredWarning && (
+                <p className="text-sm text-red-600 mt-2 font-semibold flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  Please answer this question
+                </p>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="mb-8">
+        {/* Slider/Options Section */}
+        <div className="mb-6 sm:mb-8">
           {testKey === 'RIASEC' ? (
-            <div className="relative px-2">
+            <div className="relative px-1 sm:px-4">
+              {/* Clickable scale buttons for mobile */}
+              <div className="flex justify-between mb-4">
+                {sliderLabelsRIASEC.map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => handleSliderChange(item.value)}
+                    className={`flex-1 mx-0.5 sm:mx-1 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                      hasAnswer && currentAnswer === item.value
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg scale-105'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <span className="hidden sm:block">{item.label}</span>
+                    <span className="sm:hidden">{item.short}</span>
+                  </button>
+                ))}
+              </div>
               <input
                 type="range"
                 min="1"
@@ -1345,20 +1588,27 @@ Your responses will help identify strengths and areas where additional support m
                 value={currentAnswer}
                 onChange={(e) => handleSliderChange(parseInt(e.target.value))}
                 onClick={handleRangeClick}
-                className={`w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider ${!hasAnswer ? 'range-no-thumb' : ''}`}
+                className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider hidden sm:block ${!hasAnswer ? 'range-no-thumb' : ''}`}
               />
-              <div className="flex justify-between mt-3">
-                {sliderLabelsRIASEC.map((item) => (
-                  <div key={item.value} className="text-center flex-1">
-                    <div className={`text-xs font-medium ${(hasAnswer && currentAnswer === item.value) ? 'text-indigo-600 font-bold' : 'text-gray-500'}`}>
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : testKey === 'Personality' ? (
-            <div className="relative px-2">
+            <div className="relative px-1 sm:px-4">
+              <div className="flex justify-between mb-4">
+                {sliderLabelsPersonality.map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => handleSliderChange(item.value)}
+                    className={`flex-1 mx-0.5 sm:mx-1 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                      hasAnswer && currentAnswer === item.value
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg scale-105'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <span className="hidden sm:block">{item.label}</span>
+                    <span className="sm:hidden">{item.short}</span>
+                  </button>
+                ))}
+              </div>
               <input
                 type="range"
                 min="1"
@@ -1367,20 +1617,27 @@ Your responses will help identify strengths and areas where additional support m
                 value={currentAnswer}
                 onChange={(e) => handleSliderChange(parseInt(e.target.value))}
                 onClick={handleRangeClick}
-                className={`w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider ${!hasAnswer ? 'range-no-thumb' : ''}`}
+                className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider hidden sm:block ${!hasAnswer ? 'range-no-thumb' : ''}`}
               />
-              <div className="flex justify-between mt-3">
-                {sliderLabelsPersonality.map((item) => (
-                  <div key={item.value} className="text-center flex-1">
-                    <div className={`text-xs font-medium ${(hasAnswer && currentAnswer === item.value) ? 'text-indigo-600 font-bold' : 'text-gray-500'}`}>
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : testKey === 'EI' ? (
-            <div className="relative px-2">
+            <div className="relative px-1 sm:px-2">
+              <div className="grid grid-cols-7 gap-1 sm:flex sm:justify-between mb-4">
+                {sliderLabelsEI.map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => handleSliderChange(item.value)}
+                    className={`py-2 sm:py-3 px-1 sm:px-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all sm:flex-1 sm:mx-1 ${
+                      hasAnswer && currentAnswer === item.value
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg scale-105'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <span className="hidden sm:block text-xs">{item.label}</span>
+                    <span className="sm:hidden">{item.short}</span>
+                  </button>
+                ))}
+              </div>
               <input
                 type="range"
                 min="1"
@@ -1389,81 +1646,173 @@ Your responses will help identify strengths and areas where additional support m
                 value={currentAnswer}
                 onChange={(e) => handleSliderChange(parseInt(e.target.value))}
                 onClick={handleRangeClick}
-                className={`w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider ${!hasAnswer ? 'range-no-thumb' : ''}`}
+                className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider hidden sm:block ${!hasAnswer ? 'range-no-thumb' : ''}`}
               />
-              <div className="flex justify-between mt-3">
-                {sliderLabelsEI.map((item) => (
-                  <div key={item.value} className="text-center flex-1">
-                    <div className={`text-xs font-medium ${(hasAnswer && currentAnswer === item.value) ? 'text-indigo-600 font-bold' : 'text-gray-500'}`}>
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : testKey === 'Aptitude' ? (
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {(currentQuestion.options && currentQuestion.options.length) ? (
                 currentQuestion.options.map((opt, idx) => (
-                  <label key={idx} className="flex items-center gap-3">
-                    <input type="radio" name={`opt_${currentQuestion._id}`} checked={answers[currentQuestion._id] === opt} onChange={() => setAnswers(prev => ({ ...prev, [currentQuestion._id]: opt }))} />
-                    <span className="text-sm">{opt}</span>
+                  <label 
+                    key={idx} 
+                    className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                      answers[currentQuestion._id] === opt
+                        ? 'border-indigo-500 bg-indigo-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <input 
+                      type="radio" 
+                      name={`opt_${currentQuestion._id}`} 
+                      checked={answers[currentQuestion._id] === opt} 
+                      onChange={() => setAnswers(prev => ({ ...prev, [currentQuestion._id]: opt }))} 
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600"
+                    />
+                    <span className="text-sm sm:text-base text-gray-700">{opt}</span>
                   </label>
                 ))
               ) : (
-                <div className="text-sm text-gray-500">No options configured for this aptitude question.</div>
+                <div className="text-sm text-gray-500 bg-gray-50 p-4 rounded-xl">No options configured for this aptitude question.</div>
               )}
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2">
-                <input type="checkbox" checked={!!currentAnswer} onChange={(e) => handleCheckboxChange(e.target.checked)} className="h-4 w-4" />
-                <span className="text-sm">Mark as applicable / true</span>
+              <label className="inline-flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-300 cursor-pointer transition-all">
+                <input type="checkbox" checked={!!currentAnswer} onChange={(e) => handleCheckboxChange(e.target.checked)} className="w-5 h-5 text-indigo-600 rounded" />
+                <span className="text-sm sm:text-base">Mark as applicable / true</span>
               </label>
             </div>
           )}
         </div>
 
-        <div className="flex justify-between items-center pt-4 border-t">
+        {/* Navigation Buttons */}
+        <div className="flex justify-between items-center pt-4 sm:pt-6 border-t border-gray-100">
           <button
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium disabled:opacity-50 hover:bg-gray-300 transition"
+            className="flex items-center gap-1 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl font-medium disabled:opacity-40 hover:bg-gray-200 transition-all active:scale-95"
           >
-            ← Previous
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="hidden sm:inline">Previous</span>
           </button>
 
           {currentIndex === questions.length - 1 ? (
             <button
               onClick={handleSubmit}
               disabled={!allAnswered() || submitting}
-              className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-semibold disabled:opacity-50 shadow-md"
+              className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-semibold disabled:opacity-50 shadow-lg hover:shadow-xl transition-all active:scale-95"
             >
-              {submitting ? 'Submitting...' : 'Submit Assessment'}
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span className="hidden sm:inline">Submitting...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Submit</span>
+                </>
+              )}
             </button>
           ) : (
             <button
               onClick={handleNext}
-              className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium shadow-md"
+              className="flex items-center gap-1 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all active:scale-95"
             >
-              Next →
+              <span className="hidden sm:inline">Next</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           )}
         </div>
       </div>
       </div>
-      {/* Sidebar: question status */}
-      <div className="w-40 hidden md:block">
-        <div className="bg-white rounded-xl shadow-md p-4 sticky top-24">
-          <h4 className="text-sm font-semibold mb-3">Questions</h4>
-          <div className="grid grid-cols-4 gap-2">
+      
+      {/* Desktop Sidebar: question status */}
+      <div className="w-44 hidden md:block flex-shrink-0">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sticky top-20">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-sm font-bold text-gray-800">Questions</h4>
+            <div className="flex gap-1">
+              <span className="w-3 h-3 rounded-full bg-green-500" title="Answered"></span>
+              <span className="w-3 h-3 rounded-full bg-red-400" title="Skipped"></span>
+              <span className="w-3 h-3 rounded-full bg-gray-200 border" title="Not visited"></span>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-2 max-h-80 overflow-y-auto pr-1">
             {questions.map((q, idx) => {
               const answered = isAnswered(q);
               const visited = visitedQuestions[q._id];
+              const isCurrent = idx === currentIndex;
               const status = answered ? 'answered' : (visited ? 'visited-unanswered' : 'unvisited');
-              const bg = status === 'answered' ? 'bg-green-500 text-white' : (status === 'visited-unanswered' ? 'bg-red-400 text-white' : 'bg-white text-gray-700 border');
+              const bg = isCurrent 
+                ? 'ring-2 ring-indigo-500 ring-offset-1 bg-indigo-100 text-indigo-700'
+                : status === 'answered' 
+                  ? 'bg-green-500 text-white shadow-sm' 
+                  : status === 'visited-unanswered' 
+                    ? 'bg-red-400 text-white shadow-sm' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200';
               return (
-                <button key={q._id} onClick={() => jumpTo(idx)} className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${bg}` } title={`Q ${q.questionNumber}`}>
+                <button 
+                  key={q._id} 
+                  onClick={() => jumpTo(idx)} 
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${bg}`} 
+                  title={`Q ${q.questionNumber}`}
+                >
+                  {q.questionNumber}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-4 pt-3 border-t border-gray-100">
+            <div className="text-xs text-gray-500 space-y-1">
+              <div className="flex justify-between">
+                <span>Answered:</span>
+                <span className="font-semibold text-green-600">{answeredCount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Remaining:</span>
+                <span className="font-semibold text-gray-600">{questions.length - answeredCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Question Navigator - Fixed at bottom above nav */}
+      <div className="md:hidden fixed bottom-16 left-0 right-0 z-40 px-3 pb-2 safe-bottom">
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-gray-200 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-gray-600">Quick Jump</span>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span>{answeredCount}</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300"></span>{questions.length - answeredCount}</span>
+            </div>
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+            {questions.map((q, idx) => {
+              const answered = isAnswered(q);
+              const visited = visitedQuestions[q._id];
+              const isCurrent = idx === currentIndex;
+              const status = answered ? 'answered' : (visited ? 'visited-unanswered' : 'unvisited');
+              const bg = isCurrent 
+                ? 'ring-2 ring-indigo-500 bg-indigo-100 text-indigo-700'
+                : status === 'answered' 
+                  ? 'bg-green-500 text-white' 
+                  : status === 'visited-unanswered' 
+                    ? 'bg-red-400 text-white' 
+                    : 'bg-gray-100 text-gray-600';
+              return (
+                <button 
+                  key={q._id} 
+                  onClick={() => jumpTo(idx)} 
+                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${bg}`}
+                >
                   {q.questionNumber}
                 </button>
               );
@@ -1504,43 +1853,101 @@ function StudentSettings() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-4">Account Settings</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Current Password</label>
-            <input
-              type="password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-              required
-            />
+    <div className="max-w-2xl mx-auto animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+            <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-              required
-            />
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Account Settings</h2>
+            <p className="text-sm text-gray-500">Manage your password and security</p>
+          </div>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Current Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base"
+                placeholder="Enter current password"
+                required
+              />
+            </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-              required
-            />
+            <label className="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base"
+                placeholder="Enter new password"
+                required
+              />
+            </div>
           </div>
-          {message && <div className="bg-green-50 border border-green-200 text-green-800 px-3 py-2 rounded-lg text-sm">{message}</div>}
-          {error && <div className="bg-red-50 border border-red-200 text-red-800 px-3 py-2 rounded-lg text-sm">{error}</div>}
-          <button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2.5 rounded-lg shadow-md">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm New Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base"
+                placeholder="Confirm new password"
+                required
+              />
+            </div>
+          </div>
+          
+          {message && (
+            <div className="bg-green-50 border-2 border-green-200 text-green-800 px-4 py-3 rounded-xl text-sm flex items-center gap-2 animate-fadeIn">
+              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>{message}</span>
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-50 border-2 border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm flex items-center gap-2 animate-fadeIn">
+              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span>{error}</span>
+            </div>
+          )}
+          
+          <button 
+            type="submit" 
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-base"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             Update Password
           </button>
         </form>
@@ -1845,63 +2252,151 @@ function StudentsManagement() {
 
   return (
     <div>
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4">Student Management</h2>
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-4 mb-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:w-auto">
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-            <p className="text-xs font-semibold text-blue-700">TOTAL STUDENTS</p>
-            <p className="text-3xl font-bold text-blue-600">{students.length}</p>
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Student Management</h2>
+        
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4">
+          <div className="bg-blue-50 rounded-xl p-3 sm:p-4 border border-blue-200">
+            <p className="text-xs font-semibold text-blue-700">TOTAL</p>
+            <p className="text-2xl sm:text-3xl font-bold text-blue-600">{students.length}</p>
           </div>
-          <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+          <div className="bg-green-50 rounded-xl p-3 sm:p-4 border border-green-200">
             <p className="text-xs font-semibold text-green-700">COMPLETED</p>
-            <p className="text-3xl font-bold text-green-600">{students.filter(s => s.hasCompletedTest).length}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-green-600">{students.filter(s => s.hasCompletedTest).length}</p>
           </div>
-          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="bg-yellow-50 rounded-xl p-3 sm:p-4 border border-yellow-200">
             <p className="text-xs font-semibold text-yellow-700">PENDING</p>
-            <p className="text-3xl font-bold text-yellow-600">{students.filter(s => !s.hasCompletedTest).length}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{students.filter(s => !s.hasCompletedTest).length}</p>
           </div>
-          <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-            <p className="text-xs font-semibold text-purple-700">TOTAL RESULTS</p>
-            <p className="text-3xl font-bold text-purple-600">{students.reduce((sum, s) => sum + (s.testResults?.length || 0), 0)}</p>
-          </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex gap-2 items-center">
-              <input type="file" accept=".xlsx,.csv" onChange={handleStudentFileChange} className="text-sm" disabled={uploadProgress !== null} />
-              <button onClick={handleUploadStudents} disabled={uploadProgress !== null} className={`px-4 py-2 rounded-lg ${uploadProgress !== null ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500'} text-white`}>
-                {uploadProgress !== null ? 'Uploading...' : 'Upload Students'}
-              </button>
-            </div>
-            {uploadProgress !== null && (
-              <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-                <div className="text-sm">
-                  <span className="font-bold text-blue-700">{uploadProgress.current}/{uploadProgress.total}</span>
-                  <span className="text-blue-600 ml-2">
-                    ({uploadProgress.created} new, {uploadProgress.updated} updated, {uploadProgress.skipped} skipped)
-                  </span>
-                </div>
-                <div className="w-32 bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all" 
-                    style={{ width: `${uploadProgress.total > 0 ? (uploadProgress.current / uploadProgress.total) * 100 : 0}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
-            <button onClick={() => setShowAddStudent(s => !s)} className={`px-5 py-2 rounded-lg font-semibold ${showAddStudent ? 'bg-gray-600 text-white' : 'bg-indigo-600 text-white'}`}>{showAddStudent ? 'Cancel' : '+ Add Student'}</button>
+          <div className="bg-purple-50 rounded-xl p-3 sm:p-4 border border-purple-200">
+            <p className="text-xs font-semibold text-purple-700">RESULTS</p>
+            <p className="text-2xl sm:text-3xl font-bold text-purple-600">{students.reduce((sum, s) => sum + (s.testResults?.length || 0), 0)}</p>
           </div>
         </div>
 
-        {showAddStudent && (
-          <form onSubmit={handleAddStudent} className="bg-indigo-50 p-4 rounded-lg mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <input required value={newStudent.rollNumber} onChange={(e) => setNewStudent({...newStudent, rollNumber: e.target.value})} placeholder="Roll Number" className="px-3 py-2 border rounded" />
-            <input required value={newStudent.name} onChange={(e) => setNewStudent({...newStudent, name: e.target.value})} placeholder="Name" className="px-3 py-2 border rounded" />
-            <input value={newStudent.year} onChange={(e) => setNewStudent({...newStudent, year: e.target.value})} placeholder="Year (optional)" className="px-3 py-2 border rounded" />
-            <input value={newStudent.password} onChange={(e) => setNewStudent({...newStudent, password: e.target.value})} placeholder="Password (default: student)" className="px-3 py-2 border rounded" />
-            <div className="col-span-4 text-right">
-              <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Add Student</button>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
+          <button 
+            onClick={() => setShowAddStudent(s => !s)} 
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all ${showAddStudent ? 'bg-gray-600 text-white' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md hover:shadow-lg'}`}
+          >
+            {showAddStudent ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancel
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Add Student
+              </>
+            )}
+          </button>
+          
+          {/* Upload Section - Hidden on mobile, shown on desktop */}
+          <div className="hidden md:flex items-center gap-2 flex-1">
+            <input 
+              type="file" 
+              accept=".xlsx,.csv" 
+              onChange={handleStudentFileChange} 
+              className="text-sm file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-gray-100 file:text-gray-700 file:font-medium hover:file:bg-gray-200 flex-1" 
+              disabled={uploadProgress !== null} 
+            />
+            <button 
+              onClick={handleUploadStudents} 
+              disabled={uploadProgress !== null} 
+              className={`px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap ${uploadProgress !== null ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 text-white'}`}
+            >
+              {uploadProgress !== null ? 'Uploading...' : 'Upload'}
+            </button>
+          </div>
+        </div>
+
+        {/* Upload Progress */}
+        {uploadProgress !== null && (
+          <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4 animate-fadeIn">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 flex-shrink-0"></div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between text-sm mb-1">
+                <span className="font-bold text-blue-700">{uploadProgress.current}/{uploadProgress.total}</span>
+                <span className="text-blue-600 text-xs">
+                  {uploadProgress.created} new, {uploadProgress.updated} updated
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all" 
+                  style={{ width: `${uploadProgress.total > 0 ? (uploadProgress.current / uploadProgress.total) * 100 : 0}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {showAddStudent && (
+          <form onSubmit={handleAddStudent} className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 sm:p-5 rounded-xl mb-4 border border-indigo-200 animate-fadeIn">
+            <h3 className="text-sm font-bold text-indigo-800 mb-3 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              Add New Student
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Roll Number *</label>
+                <input 
+                  required 
+                  value={newStudent.rollNumber} 
+                  onChange={(e) => setNewStudent({...newStudent, rollNumber: e.target.value})} 
+                  placeholder="e.g., MB001" 
+                  className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-sm" 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Name *</label>
+                <input 
+                  required 
+                  value={newStudent.name} 
+                  onChange={(e) => setNewStudent({...newStudent, name: e.target.value})} 
+                  placeholder="Student Name" 
+                  className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-sm" 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Year</label>
+                <input 
+                  value={newStudent.year} 
+                  onChange={(e) => setNewStudent({...newStudent, year: e.target.value})} 
+                  placeholder="1st, 2nd, etc." 
+                  className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-sm" 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                <input 
+                  value={newStudent.password} 
+                  onChange={(e) => setNewStudent({...newStudent, password: e.target.value})} 
+                  placeholder="Default: student" 
+                  className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-sm" 
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button 
+                type="submit" 
+                className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Student
+              </button>
             </div>
           </form>
         )}
@@ -1959,14 +2454,14 @@ function StudentsManagement() {
             </button>
           </div>
         </div>
-      </div>
 
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
             <tr>
-              <th className="px-4 py-3 text-left font-semibold">Roll No</th>
+              <th className="px-4 py-3 text-left font-semibold whitespace-nowrap">Roll No</th>
               <th className="px-4 py-3 text-left font-semibold">Name</th>
               <th className="px-4 py-3 text-left font-semibold">Status</th>
               <th className="px-4 py-3 text-left font-semibold">Career Type</th>
@@ -1978,7 +2473,7 @@ function StudentsManagement() {
               const latestResult = student.testResults && student.testResults.length ? student.testResults[student.testResults.length - 1] : null;
               return (
                 <tr key={student._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-semibold">{student.rollNumber}</td>
+                  <td className="px-4 py-3 font-semibold whitespace-nowrap">{student.rollNumber}</td>
                   <td className="px-4 py-3">{student.name}</td>
                   <td className="px-4 py-3">
                     {student.hasCompletedTest ? (
@@ -2095,6 +2590,92 @@ function StudentsManagement() {
             })}
           </tbody>
         </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="lg:hidden divide-y divide-gray-100">
+          {filteredStudents.length === 0 ? (
+            <div className="p-6 text-center text-gray-500">No students found</div>
+          ) : (
+            filteredStudents.map(student => {
+              const latestResult = student.testResults && student.testResults.length ? student.testResults[student.testResults.length - 1] : null;
+              return (
+                <div key={student._id} className="p-4 hover:bg-gray-50">
+                  {/* Student Header */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-700 font-bold text-sm flex-shrink-0">
+                        {student.name?.charAt(0)?.toUpperCase() || 'S'}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-gray-800 truncate">{student.name}</div>
+                        <div className="text-xs text-indigo-600 font-mono">{student.rollNumber}</div>
+                      </div>
+                    </div>
+                    {student.hasCompletedTest ? (
+                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex-shrink-0">✓ Done</span>
+                    ) : (
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold flex-shrink-0">Pending</span>
+                    )}
+                  </div>
+
+                  {/* Latest Result Summary */}
+                  {latestResult && (
+                    <div className="bg-gray-50 rounded-lg p-3 mb-3 text-xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-gray-700">{latestResult.test}</span>
+                        {latestResult.test === 'RIASEC' && latestResult.topThree && (
+                          <span className="text-indigo-600 font-medium">Top: {latestResult.topThree.slice(0,2).map(t => t.split(' ')[0]).join(', ')}</span>
+                        )}
+                        {latestResult.test === 'Personality' && (
+                          <span className="text-purple-600 font-medium">Score: {latestResult.score || '—'}</span>
+                        )}
+                        {latestResult.test === 'Aptitude' && (
+                          <span className="text-blue-600 font-medium">Score: {latestResult.score || latestResult.correct || 0}/{latestResult.total || '—'}</span>
+                        )}
+                        {latestResult.test === 'EI' && (
+                          <span className="text-teal-600 font-medium">EI: {latestResult.globalScore?.toFixed(1) || '—'}/7</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setViewingStudent(student)}
+                      className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      View
+                    </button>
+                    {latestResult && (
+                      <button
+                        onClick={() => downloadResult(student, latestResult)}
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDeleteStudent(student._id, student.name)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-center"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
       {/* Viewing modal for a selected student (inside StudentsManagement scope) */}
