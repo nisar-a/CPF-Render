@@ -78,9 +78,13 @@ const userSchema = new mongoose.Schema({
 const questionSchema = new mongoose.Schema({
   questionNumber: { type: Number, required: true },
   text: { type: String, required: true },
-  // category is required only for RIASEC questions; other tests (Aptitude/Personality) may not have a category
-  category: { type: String, enum: ['R', 'I', 'A', 'S', 'E', 'C'], required: function() { return (this.test || 'RIASEC') === 'RIASEC'; } },
-  // which test this question belongs to (e.g. 'RIASEC', 'Aptitude')
+  // category - for RIASEC: R,I,A,S,E,C; for EI: Well-being, Self-control, Emotionality, Sociability, Global; others: flexible
+  category: { 
+    type: String, 
+    enum: ['R', 'I', 'A', 'S', 'E', 'C', 'Well-being', 'Self-control', 'Emotionality', 'Sociability', 'Global', 'Personality', 'General'], 
+    required: function() { return (this.test || 'RIASEC') === 'RIASEC'; } 
+  },
+  // which test this question belongs to (e.g. 'RIASEC', 'Aptitude', 'EI')
   test: { type: String, required: true, default: 'RIASEC' },
   // optional fields for other test types
   options: { type: [String], default: undefined },
@@ -877,8 +881,11 @@ app.post('/api/admin/questions/upload', authenticateToken, isAdmin, upload.singl
         continue;
       }
 
+      // Handle category based on test type
       let cat = null;
-      if ((testKey || '').toUpperCase() === 'RIASEC') {
+      const testUpper = (testKey || '').toUpperCase();
+      
+      if (testUpper === 'RIASEC') {
         if (!rawCategory) {
           results.skipped++;
           results.errors.push({ row: i + 2, reason: 'missing category for RIASEC question' });
@@ -890,6 +897,35 @@ app.post('/api/admin/questions/upload', authenticateToken, isAdmin, upload.singl
           results.errors.push({ row: i + 2, reason: `invalid category ${rawCategory}` });
           continue;
         }
+      } else if (testUpper === 'EI') {
+        // EI categories: Well-being, Self-control, Emotionality, Sociability, Global
+        if (rawCategory) {
+          // Normalize common variations
+          const catLower = rawCategory.toLowerCase().replace(/[_-]/g, '');
+          if (catLower.includes('wellbeing') || catLower.includes('well being')) {
+            cat = 'Well-being';
+          } else if (catLower.includes('selfcontrol') || catLower.includes('self control')) {
+            cat = 'Self-control';
+          } else if (catLower.includes('emotionality') || catLower.includes('emotion')) {
+            cat = 'Emotionality';
+          } else if (catLower.includes('sociability') || catLower.includes('social')) {
+            cat = 'Sociability';
+          } else if (catLower.includes('global')) {
+            cat = 'Global';
+          } else {
+            // Try to use as-is if it's a valid enum value
+            const validEI = ['Well-being', 'Self-control', 'Emotionality', 'Sociability', 'Global'];
+            const match = validEI.find(v => v.toLowerCase() === rawCategory.toLowerCase());
+            cat = match || 'Global'; // Default to Global if unrecognized
+          }
+        } else {
+          cat = 'Global'; // Default for EI without category
+        }
+      } else if (testUpper === 'PERSONALITY') {
+        cat = rawCategory || 'Personality';
+      } else if (rawCategory) {
+        // For other tests, use the provided category if any
+        cat = rawCategory;
       }
 
       // Parse options/correct answer for Aptitude questions

@@ -2799,6 +2799,16 @@ function QuestionsManagement() {
   const [selectedTest, setSelectedTest] = useState('RIASEC');
   const { notify, confirm } = useNotification();
 
+  // Helper to get default category based on test type
+  const getDefaultCategory = (testKey) => {
+    switch (testKey) {
+      case 'RIASEC': return 'R';
+      case 'EI': return 'Well-being';
+      case 'Personality': return 'Personality';
+      default: return 'General';
+    }
+  };
+
   const fetchQuestions = React.useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/questions`, { params: { test: selectedTest } });
@@ -2844,7 +2854,7 @@ function QuestionsManagement() {
         notify('Added successfully', 'success');
       }
       // Reset form but keep the test pre-selected to the current domain
-      setFormData({ questionNumber: '', text: '', category: 'R', test: selectedTest });
+      setFormData({ questionNumber: '', text: '', category: getDefaultCategory(selectedTest), test: selectedTest });
       setShowForm(false);
       setEditing(null);
       fetchQuestions();
@@ -2875,22 +2885,52 @@ function QuestionsManagement() {
 
   return (
     <div>
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Question Bank</h2>
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold">Question Bank</h2>
+            
+            {/* Mobile: Dropdown selector for test domains */}
+            <div className="md:hidden w-full">
+              <select
+                value={selectedTest}
+                onChange={(e) => {
+                  const testKey = e.target.value;
+                  setSelectedTest(testKey);
+                  setLoading(true);
+                  setShowForm(false);
+                  setEditing(null);
+                  setFormData({ questionNumber: '', text: '', category: getDefaultCategory(testKey), test: testKey });
+                  (async () => {
+                    try {
+                      const resp = await axios.get(`${API_URL}/questions`, { params: { test: testKey } });
+                      setQuestions(resp.data);
+                    } catch (err) {
+                      console.error('Failed to fetch questions for test', testKey, err);
+                    } finally {
+                      setLoading(false);
+                    }
+                  })();
+                }}
+                className="w-full px-4 py-2.5 border-2 border-indigo-200 rounded-xl bg-indigo-50 text-indigo-800 font-semibold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+              >
+                {tests.map(t => (
+                  <option key={t.key} value={t.key}>{t.name} ({t.questionCount || 0})</option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Desktop: Tab buttons for test domains */}
             <div className="flex items-center gap-3">
               <div className="hidden md:flex gap-2">
                 {tests.map(t => (
                   <button
                     key={t.key}
                     onClick={() => {
-                      // set selected test and fetch questions for that test immediately (avoid stale selectedTest)
                       setSelectedTest(t.key);
                       setLoading(true);
                       setShowForm(false);
                       setEditing(null);
-                      setFormData({ questionNumber: '', text: '', category: 'R', test: t.key });
-                      // fetch questions for the explicit test key to avoid race with setSelectedTest
+                      setFormData({ questionNumber: '', text: '', category: getDefaultCategory(t.key), test: t.key });
                       (async (testKey) => {
                         try {
                           const resp = await axios.get(`${API_URL}/questions`, { params: { test: testKey } });
@@ -2902,33 +2942,34 @@ function QuestionsManagement() {
                         }
                       })(t.key);
                     }}
-                    className={`px-4 py-2 rounded-lg ${selectedTest === t.key ? 'bg-indigo-600 text-white' : 'bg-gray-100'}`}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTest === t.key ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
                   >
-                    {t.name}
+                    {t.key} <span className="text-xs opacity-75">({t.questionCount || 0})</span>
                   </button>
                 ))}
               </div>
-              <input type="file" accept=".xlsx,.csv" onChange={(e) => setQuestionFile(e.target.files[0])} className="hidden md:block" />
-              <button onClick={() => {
-                // trigger file selection on small screens
-                if (!questionFile) return document.querySelector('input[type=file]').click();
-              }} className="hidden md:block px-3 py-2 rounded bg-gray-100 text-sm">Select file</button>
+              
+              {/* Desktop file upload */}
+              <input type="file" accept=".xlsx,.csv" onChange={(e) => setQuestionFile(e.target.files[0])} className="hidden md:block text-sm" id="questionFileInput" />
 
               <button onClick={async () => {
-                if (!questionFile) return notify('Select a file first', 'error');
+                if (!questionFile) {
+                  document.getElementById('questionFileInput').click();
+                  return;
+                }
                 const fd = new FormData();
                 fd.append('file', questionFile);
-                // pass selected test so rows missing test can be defaulted
                 fd.append('test', selectedTest || formData.test || 'RIASEC');
                 try {
                   await axios.post(`${API_URL}/admin/questions/upload`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
                   notify('Questions uploaded successfully', 'success');
+                  setQuestionFile(null);
                   fetchQuestions();
                 } catch (err) {
                   notify(err.response?.data?.error || 'Upload failed', 'error');
                 }
-              }} className={`px-5 py-2 rounded-lg font-semibold ${showForm ? 'bg-gray-600 text-white' : 'bg-green-500 text-white'}`}>
-                Upload Questions
+              }} className="hidden md:block px-4 py-2 rounded-lg font-semibold bg-blue-500 hover:bg-blue-600 text-white transition-all">
+                {questionFile ? '📤 Upload' : '📁 Select File'}
               </button>
 
               <button
@@ -2936,18 +2977,23 @@ function QuestionsManagement() {
                   setShowForm(!showForm);
                   if (showForm) {
                     setEditing(null);
-                    setFormData({ questionNumber: '', text: '', category: 'R', test: selectedTest });
+                    setFormData({ questionNumber: '', text: '', category: getDefaultCategory(selectedTest), test: selectedTest });
                   } else {
-                    setFormData({ questionNumber: '', text: '', category: 'R', test: selectedTest });
+                    setFormData({ questionNumber: '', text: '', category: getDefaultCategory(selectedTest), test: selectedTest });
                   }
                 }}
-                className={`px-5 py-2 rounded-lg font-semibold ${showForm ? 'bg-gray-600 text-white' : 'bg-green-500 text-white'}`}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${showForm ? 'bg-gray-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}`}
               >
-                {showForm ? 'Cancel' : '+ Add Question'}
+                {showForm ? '✕ Cancel' : '+ Add'}
               </button>
             </div>
           </div>
-
+          
+          {/* Question count indicator */}
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+            <span className="font-semibold text-indigo-600">{questions.length}</span> questions in 
+            <span className="font-semibold text-indigo-600">{selectedTest}</span>
+          </div>
         {showForm && (
           <form onSubmit={handleSubmit} className="mt-4 space-y-4 bg-indigo-50 p-5 rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2968,12 +3014,32 @@ function QuestionsManagement() {
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
                   className="w-full px-3 py-2 border rounded-lg outline-none"
                 >
-                  <option value="R">R - Realistic</option>
-                  <option value="I">I - Investigative</option>
-                  <option value="A">A - Artistic</option>
-                  <option value="S">S - Social</option>
-                  <option value="E">E - Enterprising</option>
-                  <option value="C">C - Conventional</option>
+                  {formData.test === 'RIASEC' ? (
+                    <>
+                      <option value="R">R - Realistic</option>
+                      <option value="I">I - Investigative</option>
+                      <option value="A">A - Artistic</option>
+                      <option value="S">S - Social</option>
+                      <option value="E">E - Enterprising</option>
+                      <option value="C">C - Conventional</option>
+                    </>
+                  ) : formData.test === 'EI' ? (
+                    <>
+                      <option value="Well-being">Well-being</option>
+                      <option value="Self-control">Self-control</option>
+                      <option value="Emotionality">Emotionality</option>
+                      <option value="Sociability">Sociability</option>
+                      <option value="Global">Global</option>
+                    </>
+                  ) : formData.test === 'Personality' ? (
+                    <>
+                      <option value="Personality">Personality</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="General">General</option>
+                    </>
+                  )}
                 </select>
               </div>
             </div>
@@ -2991,17 +3057,17 @@ function QuestionsManagement() {
               <label className="block font-semibold mb-1 text-sm">Test / Domain</label>
               <select
                 value={formData.test}
-                onChange={(e) => setFormData({...formData, test: e.target.value})}
+                onChange={(e) => {
+                  const newTest = e.target.value;
+                  setFormData({...formData, test: newTest, category: getDefaultCategory(newTest)});
+                }}
                 className="w-full px-3 py-2 border rounded-lg outline-none"
               >
-                {/* prefer tests from server, but fallback to common defaults */}
-                {tests.length ? tests.map(t => <option key={t.key} value={t.key}>{t.name}</option>) : (
-                  <>
-                    <option value="RIASEC">RIASEC Career Assessment</option>
-                    <option value="Aptitude">Aptitude Test</option>
-                    <option value="Personality">Personality Inventory</option>
-                  </>
-                )}
+                {/* Always show all available test domains */}
+                <option value="RIASEC">RIASEC Career Assessment</option>
+                <option value="Personality">Personality Inventory (WEMWBS)</option>
+                <option value="EI">Emotional Intelligence (TEIQue)</option>
+                <option value="Aptitude">Aptitude Test</option>
               </select>
             </div>
             {/* Options + correct answer for Aptitude type */}
