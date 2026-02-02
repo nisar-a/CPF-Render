@@ -165,15 +165,15 @@ function Login({ setUser }) {
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-12 min-h-screen lg:min-h-0">
         {/* Mobile header - show on small screens only */}
-        <div className="absolute top-0 left-0 right-0 p-4 lg:hidden">
-          <div className="flex items-center justify-center gap-3 text-white">
+        <div className="absolute top-0 left-0 right-0 pt-6 pb-4 lg:hidden">
+          <div className="flex flex-col items-center justify-center text-white">
             <img 
               src={logo}
               alt="Logo" 
-              className="w-10 h-10 rounded-lg shadow-lg object-cover"
+              className="max-w-[200px] sm:max-w-[240px] h-auto rounded-xl shadow-2xl border-2 border-white/30"
               onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <span className="font-bold text-lg">Career Assessment</span>
+            <span className="font-bold text-xl mt-3">Career Assessment</span>
           </div>
         </div>
 
