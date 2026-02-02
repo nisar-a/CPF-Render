@@ -1563,6 +1563,17 @@ Your responses will help identify strengths and areas where additional support m
         <div className="mb-6 sm:mb-8">
           {testKey === 'RIASEC' ? (
             <div className="relative px-1 sm:px-4">
+              {/* Mobile Legend - Only visible on small screens */}
+              <div className="sm:hidden mb-3 p-2 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-500 text-center font-medium mb-2">What each option means:</p>
+                <div className="grid grid-cols-5 gap-1 text-xs text-gray-600 text-center">
+                  <div><strong>SD</strong><br/>Strongly Disagree</div>
+                  <div><strong>D</strong><br/>Disagree</div>
+                  <div><strong>N</strong><br/>Neutral</div>
+                  <div><strong>A</strong><br/>Agree</div>
+                  <div><strong>SA</strong><br/>Strongly Agree</div>
+                </div>
+              </div>
               {/* Clickable scale buttons for mobile */}
               <div className="flex justify-between mb-4">
                 {sliderLabelsRIASEC.map((item) => (
@@ -1593,6 +1604,17 @@ Your responses will help identify strengths and areas where additional support m
             </div>
           ) : testKey === 'Personality' ? (
             <div className="relative px-1 sm:px-4">
+              {/* Mobile Legend for Personality - Only visible on small screens */}
+              <div className="sm:hidden mb-3 p-2 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-500 text-center font-medium mb-2">What each option means:</p>
+                <div className="grid grid-cols-5 gap-1 text-xs text-gray-600 text-center">
+                  <div><strong>None</strong><br/>None of the time</div>
+                  <div><strong>Rare</strong><br/>Rarely</div>
+                  <div><strong>Some</strong><br/>Some of the time</div>
+                  <div><strong>Often</strong><br/>Often</div>
+                  <div><strong>All</strong><br/>All of the time</div>
+                </div>
+              </div>
               <div className="flex justify-between mb-4">
                 {sliderLabelsPersonality.map((item) => (
                   <button
@@ -1622,6 +1644,21 @@ Your responses will help identify strengths and areas where additional support m
             </div>
           ) : testKey === 'EI' ? (
             <div className="relative px-1 sm:px-2">
+              {/* Mobile Legend for EI - Only visible on small screens */}
+              <div className="sm:hidden mb-3 p-2 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-500 text-center font-medium mb-2">What each number means:</p>
+                <div className="grid grid-cols-4 gap-1 text-xs text-gray-600 text-center mb-1">
+                  <div><strong>1</strong> Completely Disagree</div>
+                  <div><strong>2</strong> Disagree</div>
+                  <div><strong>3</strong> Somewhat Disagree</div>
+                  <div><strong>4</strong> Neutral</div>
+                </div>
+                <div className="grid grid-cols-3 gap-1 text-xs text-gray-600 text-center">
+                  <div><strong>5</strong> Somewhat Agree</div>
+                  <div><strong>6</strong> Agree</div>
+                  <div><strong>7</strong> Completely Agree</div>
+                </div>
+              </div>
               <div className="grid grid-cols-7 gap-1 sm:flex sm:justify-between mb-4">
                 {sliderLabelsEI.map((item) => (
                   <button
