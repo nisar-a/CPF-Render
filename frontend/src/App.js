@@ -1495,13 +1495,13 @@ Your responses will help identify strengths and areas where additional support m
   ];
 
   const sliderLabelsEI = [
-    { value: 1, label: 'Completely Disagree', short: '1' },
-    { value: 2, label: 'Disagree', short: '2' },
-    { value: 3, label: 'Somewhat Disagree', short: '3' },
-    { value: 4, label: 'Neutral', short: '4' },
-    { value: 5, label: 'Somewhat Agree', short: '5' },
-    { value: 6, label: 'Agree', short: '6' },
-    { value: 7, label: 'Completely Agree', short: '7' }
+    { value: 1, label: 'Completely Disagree', short: 'CD' },
+    { value: 2, label: 'Disagree', short: 'D' },
+    { value: 3, label: 'Somewhat Disagree', short: 'SD' },
+    { value: 4, label: 'Neutral', short: 'N' },
+    { value: 5, label: 'Somewhat Agree', short: 'SA' },
+    { value: 6, label: 'Agree', short: 'A' },
+    { value: 7, label: 'Completely Agree', short: 'CA' }
   ];
 
   // Personality Inventory scale as requested: None → Rarely → Some → Often → All of the time
@@ -1646,17 +1646,17 @@ Your responses will help identify strengths and areas where additional support m
             <div className="relative px-1 sm:px-2">
               {/* Mobile Legend for EI - Only visible on small screens */}
               <div className="sm:hidden mb-3 p-2 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 text-center font-medium mb-2">What each number means:</p>
+                <p className="text-xs text-gray-500 text-center font-medium mb-2">What each option means:</p>
                 <div className="grid grid-cols-4 gap-1 text-xs text-gray-600 text-center mb-1">
-                  <div><strong>1</strong> Completely Disagree</div>
-                  <div><strong>2</strong> Disagree</div>
-                  <div><strong>3</strong> Somewhat Disagree</div>
-                  <div><strong>4</strong> Neutral</div>
+                  <div><strong>CD</strong><br/>Completely Disagree</div>
+                  <div><strong>D</strong><br/>Disagree</div>
+                  <div><strong>SD</strong><br/>Somewhat Disagree</div>
+                  <div><strong>N</strong><br/>Neutral</div>
                 </div>
                 <div className="grid grid-cols-3 gap-1 text-xs text-gray-600 text-center">
-                  <div><strong>5</strong> Somewhat Agree</div>
-                  <div><strong>6</strong> Agree</div>
-                  <div><strong>7</strong> Completely Agree</div>
+                  <div><strong>SA</strong><br/>Somewhat Agree</div>
+                  <div><strong>A</strong><br/>Agree</div>
+                  <div><strong>CA</strong><br/>Completely Agree</div>
                 </div>
               </div>
               <div className="grid grid-cols-7 gap-1 sm:flex sm:justify-between mb-4">
