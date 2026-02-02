@@ -535,7 +535,7 @@ app.post('/api/submit-test', authenticateToken, async (req, res) => {
       const globalFeedback = globalLevel === 'low' 
         ? 'Indicates a significant need for developing emotional awareness and coping strategies for social demands.'
         : globalLevel === 'average'
-        ? 'Possesses the emotional tools needed for functional success in school and social life.'
+        ? 'Possesses the emotional tools needed for functional success in College and social life.'
         : 'Indicates a high level of "Emotional Intelligence"; very effective at navigating the emotional landscape of life.';
 
       const newResult = {
