@@ -444,7 +444,8 @@ function TestsList({ onSelect }) {
           'RIASEC': '🎯',
           'Personality': '😊',
           'Aptitude': '🧠',
-          'EI': '💭'
+          'EI': '💭',
+          'Resilience': '🛡️'
         };
         return (
           <div 
@@ -637,7 +638,7 @@ function StudentHome({ profile }) {
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 flex items-center justify-center rounded-full bg-purple-100 text-purple-700 text-2xl">😊</div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800">Personality Inventory Result</h3>
+                    <h3 className="text-lg font-bold text-gray-800">WEMWBS Result</h3>
                     <p className="text-sm text-gray-600 mt-1">{scoreRange}</p>
                     <p className="text-md font-semibold text-purple-700 mt-2">{interpretation}</p>
                     <div className="mt-3 text-sm text-gray-700 whitespace-pre-line leading-relaxed">{feedback}</div>
@@ -703,7 +704,7 @@ function StudentHome({ profile }) {
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 flex items-center justify-center rounded-full bg-teal-100 text-teal-700 text-2xl">💭</div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800">Emotional Intelligence (TEIQue-SF) Result</h3>
+                    <h3 className="text-lg font-bold text-gray-800">TEIQue-SF Result</h3>
                     <div className="mt-2 p-3 bg-teal-50 rounded-lg">
                       <p className="text-sm font-semibold text-teal-700">Global EI Score: <span className="text-xl text-teal-800">{typeof globalScore === 'number' ? globalScore.toFixed(2) : globalScore}</span> / 7.0</p>
                       <p className="text-sm font-semibold text-teal-700">Level: <span className="text-teal-800">{globalLevel}</span></p>
@@ -727,6 +728,43 @@ function StudentHome({ profile }) {
             </>
           );
 
+        }
+
+        // Resilience summary card
+        if (latest.test === 'Resilience') {
+          const meanScore = latest.meanScore ?? 0;
+          const level = latest.level || 'Moderate';
+          const interpretation = latest.interpretation || '';
+          
+          const getLevelColor = (lvl) => {
+            switch (lvl) {
+              case 'Very Low': return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: 'bg-red-100', iconText: 'text-red-600' };
+              case 'Low': return { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', icon: 'bg-orange-100', iconText: 'text-orange-600' };
+              case 'Moderate': return { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', icon: 'bg-yellow-100', iconText: 'text-yellow-600' };
+              case 'High': return { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', icon: 'bg-green-100', iconText: 'text-green-600' };
+              default: return { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', icon: 'bg-gray-100', iconText: 'text-gray-600' };
+            }
+          };
+          
+          const colors = getLevelColor(level);
+          
+          return (
+            <>
+              <div className={`bg-white rounded-xl shadow-md p-6 border ${colors.border}`}>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className={`w-12 h-12 flex items-center justify-center rounded-full ${colors.icon} ${colors.iconText} text-2xl`}>🛡️</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-800">Student Resilience Survey Result</h3>
+                    <div className={`mt-2 p-3 ${colors.bg} rounded-lg`}>
+                      <p className={`text-sm font-semibold ${colors.text}`}>Mean Score: <span className="text-xl">{typeof meanScore === 'number' ? meanScore.toFixed(2) : meanScore}</span> / 5.0</p>
+                      <p className={`text-sm font-semibold ${colors.text}`}>Level: <span className="font-bold">{interpretation || level}</span></p>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-3">Completed: {new Date(latest.completedAt).toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
+            </>
+          );
         }
 
         // Generic fallback
@@ -789,7 +827,7 @@ function StudentHome({ profile }) {
                 <div className="flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-lg font-bold text-gray-800">Latest Test: Personality Inventory</h3>
+                      <h3 className="text-lg font-bold text-gray-800">Latest Test: WEMWBS</h3>
                       <p className="text-sm text-gray-600 mt-1">{scoreRange}</p>
                       <p className="text-md font-semibold text-purple-700 mt-2">{interpretation}</p>
                     </div>
@@ -823,6 +861,42 @@ function StudentHome({ profile }) {
           );
         }
 
+        if (latestAny.test === 'Resilience') {
+          const meanScore = latestAny.meanScore ?? 0;
+          const level = latestAny.level || 'Moderate';
+          const interpretation = latestAny.interpretation || level;
+          
+          const getLevelColor = (lvl) => {
+            switch (lvl) {
+              case 'Very Low': return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: 'bg-red-100', iconText: 'text-red-600' };
+              case 'Low': return { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', icon: 'bg-orange-100', iconText: 'text-orange-600' };
+              case 'Moderate': return { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', icon: 'bg-yellow-100', iconText: 'text-yellow-600' };
+              case 'High': return { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', icon: 'bg-green-100', iconText: 'text-green-600' };
+              default: return { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', icon: 'bg-gray-100', iconText: 'text-gray-600' };
+            }
+          };
+          
+          const colors = getLevelColor(level);
+          
+          return (
+            <div className={`bg-white rounded-xl shadow-md p-6 border ${colors.border}`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 flex items-center justify-center rounded-full ${colors.icon} ${colors.iconText} text-2xl`}>🛡️</div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800">Latest Test: Student Resilience Survey</h3>
+                      <p className={`text-md font-semibold ${colors.text} mt-2`}>Mean Score: {typeof meanScore === 'number' ? meanScore.toFixed(2) : meanScore} / 5.0</p>
+                      <p className={`text-sm font-semibold ${colors.text}`}>{interpretation}</p>
+                    </div>
+                    <div className="text-xs text-gray-500">{new Date(latestAny.completedAt).toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
         // If latest is RIASEC, rely on the main RIASEC cards already shown; no extra card needed.
         return null;
       })()}
@@ -841,6 +915,7 @@ function StudentHome({ profile }) {
               const isPersonality = r.test === 'Personality';
               const isAptitude = r.test === 'Aptitude';
               const isEI = r.test === 'EI';
+              const isResilience = r.test === 'Resilience';
               const getNum = (v) => (v !== undefined && v !== null && !isNaN(Number(v)) ? Number(v) : null);
               const qc = getNum(r.questionCount);
               const sVal = getNum(r.score) ?? getNum(r.total) ?? getNum(r.correct);
@@ -851,6 +926,8 @@ function StudentHome({ profile }) {
                 ? `${r.test}` 
                 : isEI
                 ? `${r.test} — ${r.globalLevel || 'Completed'} EI`
+                : isResilience
+                ? `${r.test} — ${r.level || 'Completed'}`
                 : `${r.test} — ${r.primaryCareer}`;
               
               const scoreText = isPersonality 
@@ -859,13 +936,16 @@ function StudentHome({ profile }) {
                 ? `Score: ${sVal ?? '—'}/${getNum(r.total) ?? getNum(r.totalQuestions) ?? '—'}` 
                 : isEI
                 ? (r.globalScore !== undefined && r.globalScore !== null ? `Global Score: ${typeof r.globalScore === 'number' ? r.globalScore.toFixed(2) : r.globalScore}/7.0` : 'Global Score: —/7.0')
+                : isResilience
+                ? (r.meanScore !== undefined && r.meanScore !== null ? `Mean Score: ${typeof r.meanScore === 'number' ? r.meanScore.toFixed(2) : r.meanScore}/5.0` : 'Mean Score: —/5.0')
                 : `Top: ${r.topThree?.map(t => t.split(' - ')[0]).join(', ')}`;
 
               const testIcons = {
                 'RIASEC': '🎯',
                 'Personality': '😊',
                 'Aptitude': '🧠',
-                'EI': '💭'
+                'EI': '💭',
+                'Resilience': '🛡️'
               };
               
               return (
@@ -980,11 +1060,33 @@ function downloadResultForUser(result, profile) {
     const score = result?.score ?? result?.correct ?? 0;
     const total = result?.total ?? result?.totalQuestions ?? 'N/A';
     lines.push(`Score: ${score} / ${total}`);
+  } else if (test === 'Resilience') {
+    const meanScore = result?.meanScore ?? 'N/A';
+    const level = result?.level || 'N/A';
+    const interpretation = result?.interpretation || '';
+    const feedback = result?.feedback || '';
+    
+    if (typeof meanScore === 'number') {
+      lines.push(`Mean Score: ${meanScore.toFixed(2)} / 5.0`);
+    } else {
+      lines.push(`Mean Score: ${meanScore} / 5.0`);
+    }
+    lines.push(`Level: ${level}`);
+    if (interpretation) lines.push(`Interpretation: ${interpretation}`);
+    if (feedback) {
+      lines.push(``);
+      lines.push(`Feedback & Recommendations:`);
+      lines.push(feedback);
+    }
   } else {
     lines.push(`Result data not available.`);
   }
 
   // Generate PDF via jsPDF (loaded via public/index.html)
+  const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+  const safeTest = test.replace(/[^a-zA-Z0-9]/g, '_');
+  const fileName = `${roll}_${safeName}_${safeTest}_report`;
+  
   try {
     const doc = new window.jspdf.jsPDF();
     const margin = 14;
@@ -1001,14 +1103,14 @@ function downloadResultForUser(result, profile) {
         if (y > 280) { doc.addPage(); y = margin; }
       });
     });
-    doc.save(`${roll}_${test}_report.pdf`);
+    doc.save(`${fileName}.pdf`);
   } catch (e) {
     // Fallback to text if PDF fails
     const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${roll}_${test}_report.txt`;
+    a.download = `${fileName}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -1113,9 +1215,10 @@ function TestComponent({ profile, fetchProfile, testKey }) {
       // Test-specific success message
       let testName = testKey;
       if (testKey === 'RIASEC') testName = 'Career Interest Assessment';
-      else if (testKey === 'Personality') testName = 'Personality Inventory';
+      else if (testKey === 'Personality') testName = 'WEMWBS';
       else if (testKey === 'Aptitude') testName = 'Aptitude Test';
-      else if (testKey === 'EI') testName = 'Emotional Intelligence';
+      else if (testKey === 'EI') testName = 'TEIQue-SF';
+      else if (testKey === 'Resilience') testName = 'Student Resilience Survey';
       
       notify(`${testName} submitted successfully! 🎉`, 'success');
       
@@ -1131,11 +1234,12 @@ function TestComponent({ profile, fetchProfile, testKey }) {
   const isAnswered = (q) => {
     const a = answers[q._id];
     const t = (q.test || '').toString().toLowerCase();
-    // Slider-based tests: RIASEC (5-point), Personality (5-point), EI (7-point)
+    // Slider-based tests: RIASEC (5-point), Personality (5-point), EI (7-point), Resilience (5-point)
     // All require explicit user selection, so undefined means not answered
     if (t === 'riasec') return a !== undefined;
     if (t === 'personality') return a !== undefined;
     if (t === 'ei') return a !== undefined;
+    if (t === 'resilience') return a !== undefined;
     // Aptitude uses MCQ radio buttons - undefined or empty/null/0 means not answered
     if (t === 'aptitude') return a !== undefined && a !== '' && a !== 0 && a !== null;
     // Generic fallback for checkbox-based tests
@@ -1209,7 +1313,7 @@ Please read each statement carefully and choose the option that best reflects yo
         case 'EI':
           return {
             icon: '💭',
-            title: 'Trait Emotional Intelligence Questionnaire (TEIQue)',
+            title: 'TEIQue-SF (Trait Emotional Intelligence Questionnaire - Short Form)',
             subtitle: null,
             fullText: `This questionnaire is designed to understand how you typically perceive, express, and manage your emotions.
 
@@ -1219,14 +1323,27 @@ Your responses will help in gaining insights into emotional strengths and areas 
           };
         case 'Aptitude':
           return {
-            icon: '🛡️',
-            title: 'Student Resilience Survey (SRS)',
+            icon: '🧠',
+            title: 'Aptitude Test',
             subtitle: null,
-            fullText: `This survey is designed to understand how you respond to challenges, stress, and change in your academic and personal life.
+            fullText: `This test is designed to assess your cognitive abilities and problem-solving skills.
 
-There are no right or wrong answers—please respond honestly based on your usual experiences.
+Read each question carefully and select the best answer from the options provided.
 
-Your responses will help identify strengths and areas where additional support may be helpful.`
+Take your time and answer to the best of your ability.`
+          };
+        case 'Resilience':
+          return {
+            icon: '🛡️',
+            title: 'Student Resilience Survey',
+            subtitle: null,
+            fullText: `This survey helps you understand how you usually handle stress, challenges, and changes in your life. There are no right or wrong answers—please respond honestly based on your own experiences.
+
+Please read every statement carefully and select the answer that fits you best.
+
+Scale: 1 – Never, 2 – Rarely, 3 – Sometimes, 4 – Often, 5 – Always
+
+Your responses will help identify your resilience strengths and areas where additional support may be helpful.`
           };
         default:
           return {
@@ -1353,7 +1470,7 @@ Your responses will help identify strengths and areas where additional support m
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="bg-green-500 text-white rounded-xl p-8 text-center">
             <div className="text-6xl mb-3">🎉</div>
-            <h2 className="text-3xl font-bold">Emotional Intelligence Assessment Complete</h2>
+            <h2 className="text-3xl font-bold">TEIQue-SF Assessment Complete</h2>
             <div className="text-lg mt-4 font-semibold">Global EI Score: <span className="text-2xl">{globalScore.toFixed(2)}</span> / 7.0</div>
             <div className="text-sm mt-2 opacity-90 font-semibold">Level: {globalLevel}</div>
           </div>
@@ -1381,7 +1498,7 @@ Your responses will help identify strengths and areas where additional support m
           </div>
 
           <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-6">
-            <h4 className="font-bold text-indigo-800 text-lg mb-2">Overall Emotional Intelligence Profile</h4>
+            <h4 className="font-bold text-indigo-800 text-lg mb-2">Overall TEIQue-SF Profile</h4>
             <p className="text-sm text-indigo-700 leading-relaxed">{globalFeedback}</p>
           </div>
         </div>
@@ -1406,7 +1523,7 @@ Your responses will help identify strengths and areas where additional support m
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="bg-green-500 text-white rounded-xl p-8 text-center">
             <div className="text-6xl mb-3">🎉</div>
-            <h2 className="text-3xl font-bold">Personality Assessment Complete</h2>
+            <h2 className="text-3xl font-bold">WEMWBS Assessment Complete</h2>
             <div className="text-sm mt-2 opacity-90">{scoreRange}</div>
             <div className="text-lg mt-2 font-semibold">{interpretation}</div>
           </div>
@@ -1431,6 +1548,83 @@ Your responses will help identify strengths and areas where additional support m
           <div className="bg-white rounded-xl shadow-md p-6">
             <h3 className="text-xl font-bold mb-4">Summary</h3>
             <div className="text-sm text-gray-700">You answered {score} out of {total} correctly.</div>
+          </div>
+        </div>
+      );
+    }
+
+    if (testKey === 'Resilience') {
+      const meanScore = result.meanScore || 0;
+      const level = result.level || 'Moderate';
+      const interpretation = result.interpretation || '';
+      const feedback = result.feedback || '';
+      
+      // Determine colors based on level
+      const getLevelColors = (lvl) => {
+        switch (lvl) {
+          case 'Very Low':
+            return { bg: 'bg-red-500', headerBg: 'bg-red-50', headerBorder: 'border-red-200', headerText: 'text-red-800', iconBg: 'bg-red-100', iconText: 'text-red-600' };
+          case 'Low':
+            return { bg: 'bg-orange-500', headerBg: 'bg-orange-50', headerBorder: 'border-orange-200', headerText: 'text-orange-800', iconBg: 'bg-orange-100', iconText: 'text-orange-600' };
+          case 'Moderate':
+            return { bg: 'bg-yellow-500', headerBg: 'bg-yellow-50', headerBorder: 'border-yellow-200', headerText: 'text-yellow-800', iconBg: 'bg-yellow-100', iconText: 'text-yellow-600' };
+          case 'High':
+            return { bg: 'bg-green-500', headerBg: 'bg-green-50', headerBorder: 'border-green-200', headerText: 'text-green-800', iconBg: 'bg-green-100', iconText: 'text-green-600' };
+          default:
+            return { bg: 'bg-gray-500', headerBg: 'bg-gray-50', headerBorder: 'border-gray-200', headerText: 'text-gray-800', iconBg: 'bg-gray-100', iconText: 'text-gray-600' };
+        }
+      };
+      
+      const colors = getLevelColors(level);
+
+      return (
+        <div className="max-w-3xl mx-auto space-y-6">
+          <div className={`${colors.bg} text-white rounded-xl p-8 text-center`}>
+            <div className="text-6xl mb-3">🛡️</div>
+            <h2 className="text-3xl font-bold">Student Resilience Survey Complete</h2>
+            <div className="text-lg mt-4 font-semibold">Mean Score: <span className="text-2xl">{typeof meanScore === 'number' ? meanScore.toFixed(2) : meanScore}</span> / 5.0</div>
+            <div className="text-xl mt-2 font-bold">{interpretation}</div>
+          </div>
+          
+          <div className={`${colors.headerBg} border-2 ${colors.headerBorder} rounded-xl p-6`}>
+            <div className="flex items-start gap-4">
+              <div className={`w-12 h-12 rounded-full ${colors.iconBg} flex items-center justify-center flex-shrink-0`}>
+                <svg className={`w-6 h-6 ${colors.iconText}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className={`text-xl font-bold ${colors.headerText} mb-2`}>Your Resilience Score – What It Means for You</h3>
+                <p className={`text-sm ${colors.headerText} opacity-80`}>This result helps you understand how you usually deal with stress, change, and challenges.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className="text-xl font-bold mb-4">Feedback & Recommendations</h3>
+            <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{feedback}</div>
+          </div>
+          
+          <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-6">
+            <h4 className="font-bold text-indigo-800 text-lg mb-2">📊 Score Range Guide</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+              <div className={`p-3 rounded-lg ${level === 'Very Low' ? 'ring-2 ring-red-500' : ''} bg-red-50`}>
+                <p className="font-semibold text-red-700">Below 2.0</p>
+                <p className="text-xs text-red-600">Very Low</p>
+              </div>
+              <div className={`p-3 rounded-lg ${level === 'Low' ? 'ring-2 ring-orange-500' : ''} bg-orange-50`}>
+                <p className="font-semibold text-orange-700">2.0 – 2.9</p>
+                <p className="text-xs text-orange-600">Low</p>
+              </div>
+              <div className={`p-3 rounded-lg ${level === 'Moderate' ? 'ring-2 ring-yellow-500' : ''} bg-yellow-50`}>
+                <p className="font-semibold text-yellow-700">3.0 – 3.9</p>
+                <p className="text-xs text-yellow-600">Moderate</p>
+              </div>
+              <div className={`p-3 rounded-lg ${level === 'High' ? 'ring-2 ring-green-500' : ''} bg-green-50`}>
+                <p className="font-semibold text-green-700">4.0 – 5.0</p>
+                <p className="text-xs text-green-600">High</p>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -1478,7 +1672,7 @@ Your responses will help identify strengths and areas where additional support m
   const hasAnswer = answers[currentQuestion._id] !== undefined;
   const isQuestionVisited = visitedQuestions[currentQuestion._id] === true;
   const showUnansweredWarning = isQuestionVisited && !hasAnswer;
-  const currentAnswer = (testKey === 'RIASEC' || testKey === 'Personality')
+  const currentAnswer = (testKey === 'RIASEC' || testKey === 'Personality' || testKey === 'Resilience')
     ? (hasAnswer ? answers[currentQuestion._id] : 3)
     : (testKey === 'EI')
     ? (hasAnswer ? answers[currentQuestion._id] : 4)
@@ -1511,6 +1705,15 @@ Your responses will help identify strengths and areas where additional support m
     { value: 3, label: 'Some of the time', short: 'Some' },
     { value: 4, label: 'Often', short: 'Often' },
     { value: 5, label: 'All of the time', short: 'All' }
+  ];
+
+  // Resilience Survey scale: Never → Rarely → Sometimes → Often → Always
+  const sliderLabelsResilience = [
+    { value: 1, label: 'Never', short: 'Never' },
+    { value: 2, label: 'Rarely', short: 'Rarely' },
+    { value: 3, label: 'Sometimes', short: 'Some' },
+    { value: 4, label: 'Often', short: 'Often' },
+    { value: 5, label: 'Always', short: 'Always' }
   ];
 
   return (
@@ -1679,6 +1882,46 @@ Your responses will help identify strengths and areas where additional support m
                 type="range"
                 min="1"
                 max="7"
+                step="1"
+                value={currentAnswer}
+                onChange={(e) => handleSliderChange(parseInt(e.target.value))}
+                onClick={handleRangeClick}
+                className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider hidden sm:block ${!hasAnswer ? 'range-no-thumb' : ''}`}
+              />
+            </div>
+          ) : testKey === 'Resilience' ? (
+            <div className="relative px-1 sm:px-4">
+              {/* Mobile Legend for Resilience - Only visible on small screens */}
+              <div className="sm:hidden mb-3 p-2 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-500 text-center font-medium mb-2">What each option means:</p>
+                <div className="grid grid-cols-5 gap-1 text-xs text-gray-600 text-center">
+                  <div><strong>1</strong><br/>Never</div>
+                  <div><strong>2</strong><br/>Rarely</div>
+                  <div><strong>3</strong><br/>Sometimes</div>
+                  <div><strong>4</strong><br/>Often</div>
+                  <div><strong>5</strong><br/>Always</div>
+                </div>
+              </div>
+              <div className="flex justify-between mb-4">
+                {sliderLabelsResilience.map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => handleSliderChange(item.value)}
+                    className={`flex-1 mx-0.5 sm:mx-1 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                      hasAnswer && currentAnswer === item.value
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg scale-105'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <span className="hidden sm:block">{item.label}</span>
+                    <span className="sm:hidden">{item.short}</span>
+                  </button>
+                ))}
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="5"
                 step="1"
                 value={currentAnswer}
                 onChange={(e) => handleSliderChange(parseInt(e.target.value))}
@@ -2178,7 +2421,7 @@ function StudentsManagement() {
     reportLines.push(``);
 
     if (result?.test === 'RIASEC') {
-      reportLines.push(`Result (RIASEC Career Assessment):`);
+      reportLines.push(`Result (RIASEC):`);
       reportLines.push(`- Primary Career Type: ${result?.primaryCareer || 'N/A'}`);
       reportLines.push(`- Top Three Types: ${result?.topThree?.join(', ') || 'N/A'}`);
       reportLines.push(``);
@@ -2192,7 +2435,7 @@ function StudentsManagement() {
         result.recommendedCareers.forEach(c => reportLines.push(`- ${c}`));
       }
     } else if (result?.test === 'EI') {
-      reportLines.push(`Result (Emotional Intelligence - TEIQue-SF):`);
+      reportLines.push(`Result (TEIQue-SF):`);
       const globalScore = result?.globalScore;
       const globalLevel = result?.globalLevel;
       
@@ -2231,7 +2474,7 @@ function StudentsManagement() {
         reportLines.push(result.globalFeedback);
       }
     } else if (result?.test === 'Personality') {
-      reportLines.push(`Result (Personality Inventory):`);
+      reportLines.push(`Result (WEMWBS):`);
       const score = result?.score ?? result?.total ?? result?.correct ?? 'N/A';
       const qCount = result?.questionCount || 0;
       const range = qCount >= 14 ? 70 : 35;
@@ -2249,18 +2492,62 @@ function StudentsManagement() {
       const total = result?.total ?? result?.totalQuestions ?? 'N/A';
       reportLines.push(`- Score: ${score} / ${total}`);
       reportLines.push(`- Correct Answers: ${score}`);
+    } else if (result?.test === 'Resilience') {
+      reportLines.push(`Result (Student Resilience Survey):`);
+      const meanScore = result?.meanScore ?? 'N/A';
+      const level = result?.level || 'N/A';
+      const interpretation = result?.interpretation || '';
+      const feedback = result?.feedback || '';
+      
+      if (typeof meanScore === 'number') {
+        reportLines.push(`- Mean Score: ${meanScore.toFixed(2)} / 5.0`);
+      } else {
+        reportLines.push(`- Mean Score: ${meanScore} / 5.0`);
+      }
+      reportLines.push(`- Level: ${level}`);
+      if (interpretation) reportLines.push(`- Interpretation: ${interpretation}`);
+      if (feedback) {
+        reportLines.push(``);
+        reportLines.push(`Feedback & Recommendations:`);
+        reportLines.push(feedback);
+      }
     } else {
       reportLines.push(`Result: ${result?.test || 'Unknown'} test - Data available`);
     }
 
-    const report = reportLines.join('\n');
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${student.rollNumber}_${result?.test || 'result'}_report.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Generate PDF via jsPDF
+    const safeName = student.name.replace(/[^a-zA-Z0-9]/g, '_');
+    const safeTest = (result?.test || 'result').replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = `${student.rollNumber}_${safeName}_${safeTest}_report`;
+    
+    try {
+      const doc = new window.jspdf.jsPDF();
+      const margin = 14;
+      let y = margin;
+      doc.setFontSize(16);
+      doc.text(reportLines[0], margin, y);
+      doc.setFontSize(11);
+      y += 8;
+      reportLines.slice(1).forEach(line => {
+        const split = doc.splitTextToSize(line, 180);
+        split.forEach(chunk => {
+          doc.text(chunk, margin, y);
+          y += 6;
+          if (y > 280) { doc.addPage(); y = margin; }
+        });
+      });
+      doc.save(`${fileName}.pdf`);
+    } catch (e) {
+      // Fallback to text if PDF fails
+      const report = reportLines.join('\n');
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${fileName}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600"></div></div>;
@@ -2571,6 +2858,13 @@ function StudentsManagement() {
                               })()}
                             </div>
                           </>
+                        ) : latestResult.test === 'Resilience' ? (
+                          <>
+                            <div className="font-semibold text-amber-600">
+                              Mean Score: {latestResult.meanScore !== undefined && latestResult.meanScore !== null ? (typeof latestResult.meanScore === 'number' ? latestResult.meanScore.toFixed(2) : latestResult.meanScore) : '—'} / 5.0
+                            </div>
+                            <div className="text-gray-600">Level: {latestResult.level || latestResult.interpretation || '—'}</div>
+                          </>
                         ) : (
                           <span className="text-gray-500">{latestResult.test} - Test completed</span>
                         )}
@@ -2672,6 +2966,9 @@ function StudentsManagement() {
                         )}
                         {latestResult.test === 'EI' && (
                           <span className="text-teal-600 font-medium">EI: {latestResult.globalScore?.toFixed(1) || '—'}/7</span>
+                        )}
+                        {latestResult.test === 'Resilience' && (
+                          <span className="text-amber-600 font-medium">Score: {latestResult.meanScore?.toFixed(1) || '—'}/5 ({latestResult.level || '—'})</span>
                         )}
                       </div>
                     </div>
@@ -2805,6 +3102,28 @@ function StudentsManagement() {
                               </div>
                             </div>
                           </>
+                        ) : r.test === 'Resilience' ? (
+                          <>
+                            <div className="bg-white rounded border p-3 mb-2">
+                              <div className="mb-3 pb-3 border-b">
+                                <div className="text-sm text-gray-700">
+                                  <span className="font-semibold">Mean Score:</span> <span className="text-lg font-bold text-amber-600">{r.meanScore !== undefined && r.meanScore !== null ? (typeof r.meanScore === 'number' ? r.meanScore.toFixed(2) : r.meanScore) : '—'}</span> / 5.0
+                                </div>
+                                <div className="text-sm text-gray-700 mt-1">
+                                  <span className="font-semibold">Level:</span> <span className="font-semibold text-indigo-600">{r.level || '—'}</span>
+                                </div>
+                                {r.interpretation && (
+                                  <div className="text-sm text-amber-700 mt-2 font-semibold">{r.interpretation}</div>
+                                )}
+                              </div>
+                              {r.feedback && (
+                                <div className="mt-2">
+                                  <div className="text-xs font-semibold text-gray-600 mb-2">FEEDBACK & RECOMMENDATIONS</div>
+                                  <div className="text-xs text-gray-600 whitespace-pre-wrap">{r.feedback}</div>
+                                </div>
+                              )}
+                            </div>
+                          </>
                         ) : null}
 
                       </div>
@@ -2842,6 +3161,7 @@ function QuestionsManagement() {
       case 'RIASEC': return 'R';
       case 'EI': return 'Well-being';
       case 'Personality': return 'Personality';
+      case 'Resilience': return 'Home';
       default: return 'General';
     }
   };
@@ -3072,6 +3392,15 @@ function QuestionsManagement() {
                     <>
                       <option value="Personality">Personality</option>
                     </>
+                  ) : formData.test === 'Resilience' ? (
+                    <>
+                      <option value="Home">Home</option>
+                      <option value="College">College</option>
+                      <option value="Community">Community</option>
+                      <option value="Involvement">Involvement</option>
+                      <option value="Peers">Peers</option>
+                      <option value="Self">Self</option>
+                    </>
                   ) : (
                     <>
                       <option value="General">General</option>
@@ -3101,10 +3430,11 @@ function QuestionsManagement() {
                 className="w-full px-3 py-2 border rounded-lg outline-none"
               >
                 {/* Always show all available test domains */}
-                <option value="RIASEC">RIASEC Career Assessment</option>
-                <option value="Personality">Personality Inventory (WEMWBS)</option>
-                <option value="EI">Emotional Intelligence (TEIQue)</option>
+                <option value="RIASEC">RIASEC</option>
+                <option value="Personality">WEMWBS</option>
+                <option value="EI">TEIQue-SF</option>
                 <option value="Aptitude">Aptitude Test</option>
+                <option value="Resilience">Student Resilience Survey</option>
               </select>
             </div>
             {/* Options + correct answer for Aptitude type */}

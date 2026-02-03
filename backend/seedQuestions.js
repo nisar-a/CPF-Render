@@ -11,7 +11,7 @@ mongoose.connect(MONGODB_URI, {
 const questionSchema = new mongoose.Schema({
   questionNumber: { type: Number, required: true },
   text: { type: String, required: true },
-  category: { type: String, enum: ['R', 'I', 'A', 'S', 'E', 'C'], required: function() { return (this.test || 'RIASEC') === 'RIASEC'; } },
+  category: { type: String, enum: ['R', 'I', 'A', 'S', 'E', 'C', 'Home', 'College', 'Community', 'Involvement', 'Peers', 'Self'], required: function() { return (this.test || 'RIASEC') === 'RIASEC'; } },
   test: { type: String, required: true, default: 'RIASEC' },
   options: { type: [String], default: undefined },
   correctAnswer: { type: String },
@@ -151,7 +151,60 @@ const questions = [
   { questionNumber: 11, text: "I have been able to make up my own mind about things", test: 'Personality' },
   { questionNumber: 12, text: "I have been feeling loved", test: 'Personality' },
   { questionNumber: 13, text: "I have been interested in new things", test: 'Personality' },
-  { questionNumber: 14, text: "I have been feeling cheerful", test: 'Personality' }
+  { questionNumber: 14, text: "I have been feeling cheerful", test: 'Personality' },
+
+  // Student Resilience Survey (40 items, 5-point scale: 1-Never to 5-Always)
+  // Section 1: At home, there is an adult who...
+  { questionNumber: 1, text: "At home, there is an adult who is interested in my college work", category: 'Home', test: 'Resilience' },
+  { questionNumber: 2, text: "At home, there is an adult who believes that I will be a success", category: 'Home', test: 'Resilience' },
+  { questionNumber: 3, text: "At home, there is an adult who wants me to do my best", category: 'Home', test: 'Resilience' },
+  { questionNumber: 4, text: "At home, there is an adult who listens to me when I have something to say", category: 'Home', test: 'Resilience' },
+  
+  // Section 2: At College, there is an adult who...
+  { questionNumber: 5, text: "At College, there is an adult who really cares about me", category: 'College', test: 'Resilience' },
+  { questionNumber: 6, text: "At College, there is an adult who tells me when I do a good job", category: 'College', test: 'Resilience' },
+  { questionNumber: 7, text: "At College, there is an adult who listens to me when I have something to say", category: 'College', test: 'Resilience' },
+  { questionNumber: 8, text: "At College, there is an adult who believes that I will be a success", category: 'College', test: 'Resilience' },
+  
+  // Section 3: Away from college, there is an adult who...
+  { questionNumber: 9, text: "Away from college, there is an adult who really cares about me", category: 'Community', test: 'Resilience' },
+  { questionNumber: 10, text: "Away from college, there is an adult who tells me when I do a good job", category: 'Community', test: 'Resilience' },
+  { questionNumber: 11, text: "Away from college, there is an adult who believes that I will be a success", category: 'Community', test: 'Resilience' },
+  { questionNumber: 12, text: "Away from college, there is an adult who I trust", category: 'Community', test: 'Resilience' },
+  
+  // Section 4: Away from college (activities)...
+  { questionNumber: 13, text: "Away from college, I am a member of a club, sports team, temple association, or other group", category: 'Involvement', test: 'Resilience' },
+  { questionNumber: 14, text: "Away from college, I take lessons in music, art, sports, or have a hobby", category: 'Involvement', test: 'Resilience' },
+  
+  // Section 5: Are there students at your college who would...
+  { questionNumber: 15, text: "Are there students at your college who would choose you on their team at College", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 16, text: "Are there students at your college who would explain the rules of a game if you didn't understand them", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 17, text: "Are there students at your college who would invite you to their home", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 18, text: "Are there students at your college who would share things with you", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 19, text: "Are there students at your college who would help you if you hurt yourself", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 20, text: "Are there students at your college who would miss you if you weren't at school", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 21, text: "Are there students at your college who would make you feel better if something is bothering you", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 22, text: "Are there students at your college who would pick you for a partner", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 23, text: "Are there students at your college who would help you if other students are being mean to you", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 24, text: "Are there students at your college who would tell you you're their friend", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 25, text: "Are there students at your college who would ask you to join in when you are all alone", category: 'Peers', test: 'Resilience' },
+  { questionNumber: 26, text: "Are there students at your college who would tell you secrets", category: 'Peers', test: 'Resilience' },
+  
+  // Section 6: Self statements
+  { questionNumber: 27, text: "I do things at home that make a difference (i.e., make things better)", category: 'Self', test: 'Resilience' },
+  { questionNumber: 28, text: "I help my family make decisions", category: 'Self', test: 'Resilience' },
+  { questionNumber: 29, text: "At college, I decide things like class activities or rules", category: 'Self', test: 'Resilience' },
+  { questionNumber: 30, text: "I do things at school that make a difference (i.e., make things better)", category: 'Self', test: 'Resilience' },
+  { questionNumber: 31, text: "I can work out my problems", category: 'Self', test: 'Resilience' },
+  { questionNumber: 32, text: "I can do most things if I try", category: 'Self', test: 'Resilience' },
+  { questionNumber: 33, text: "There are many things that I do well", category: 'Self', test: 'Resilience' },
+  { questionNumber: 34, text: "I feel bad when someone gets their feelings hurt", category: 'Self', test: 'Resilience' },
+  { questionNumber: 35, text: "I try to understand what other people feel", category: 'Self', test: 'Resilience' },
+  { questionNumber: 36, text: "When I need help, I find someone to talk to", category: 'Self', test: 'Resilience' },
+  { questionNumber: 37, text: "I know where to go for help when I have a problem", category: 'Self', test: 'Resilience' },
+  { questionNumber: 38, text: "I try to work out problems by talking about them", category: 'Self', test: 'Resilience' },
+  { questionNumber: 39, text: "I have goals and plans for the future", category: 'Self', test: 'Resilience' },
+  { questionNumber: 40, text: "I think I will be successful when I grow up", category: 'Self', test: 'Resilience' }
 ];
 
 async function seedDatabase() {
@@ -203,7 +256,7 @@ async function seedDatabase() {
     console.log('\n=== Database Seeded Successfully ===');
     console.log('Admin Login: ADMIN001 / admin123');
     console.log('Student Login: MB001 / student');
-    console.log('Total Questions: 42 RIASEC + 30 EI + 3 Aptitude + Personality');
+    console.log('Total Questions: 42 RIASEC + 30 EI + 14 Personality + 40 Resilience');
     
     mongoose.connection.close();
   } catch (error) {

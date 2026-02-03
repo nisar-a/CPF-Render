@@ -69,6 +69,9 @@ const userSchema = new mongoose.Schema({
       globalScore: Number,
       globalLevel: String,
       globalFeedback: String,
+      // Resilience fields
+      meanScore: Number,
+      level: String,
       // Common field
       completedAt: Date
     }
@@ -78,13 +81,13 @@ const userSchema = new mongoose.Schema({
 const questionSchema = new mongoose.Schema({
   questionNumber: { type: Number, required: true },
   text: { type: String, required: true },
-  // category - for RIASEC: R,I,A,S,E,C; for EI: Well-being, Self-control, Emotionality, Sociability, Global; others: flexible
+  // category - for RIASEC: R,I,A,S,E,C; for EI: Well-being, Self-control, Emotionality, Sociability, Global; for Resilience: Home, College, Community, Involvement, Peers, Self; others: flexible
   category: { 
     type: String, 
-    enum: ['R', 'I', 'A', 'S', 'E', 'C', 'Well-being', 'Self-control', 'Emotionality', 'Sociability', 'Global', 'Personality', 'General'], 
+    enum: ['R', 'I', 'A', 'S', 'E', 'C', 'Well-being', 'Self-control', 'Emotionality', 'Sociability', 'Global', 'Personality', 'General', 'Home', 'College', 'Community', 'Involvement', 'Peers', 'Self'], 
     required: function() { return (this.test || 'RIASEC') === 'RIASEC'; } 
   },
-  // which test this question belongs to (e.g. 'RIASEC', 'Aptitude', 'EI')
+  // which test this question belongs to (e.g. 'RIASEC', 'Aptitude', 'EI', 'Resilience')
   test: { type: String, required: true, default: 'RIASEC' },
   // optional fields for other test types
   options: { type: [String], default: undefined },
@@ -184,18 +187,23 @@ const careerRecommendations = {
 const testsMeta = {
   RIASEC: {
     id: 'RIASEC',
-    name: 'RIASEC Career Assessment',
+    name: 'RIASEC',
     description: 'Interests-based career assessment (Realistic, Investigative, Artistic, Social, Enterprising, Conventional)'
   },
   Personality: {
     id: 'Personality',
-    name: 'Personality Inventory',
-    description: 'Brief personality inventory to capture work-style preferences'
+    name: 'WEMWBS',
+    description: 'Warwick-Edinburgh Mental Well-being Scale'
   },
   EI: {
     id: 'EI',
-    name: 'Emotional Intelligence (TEIQue-SF)',
-    description: 'Measure your emotional intelligence across Well-being, Self-control, Emotionality, and Sociability'
+    name: 'TEIQue-SF',
+    description: 'Trait Emotional Intelligence Questionnaire - Short Form'
+  },
+  Resilience: {
+    id: 'Resilience',
+    name: 'Student Resilience Survey',
+    description: 'Understand how you handle stress, challenges, and changes in your life'
   }
 };
 
@@ -559,6 +567,112 @@ app.post('/api/submit-test', authenticateToken, async (req, res) => {
         globalScore: parseFloat(globalScore.toFixed(2)),
         globalLevel: globalLevel.charAt(0).toUpperCase() + globalLevel.slice(1),
         globalFeedback
+      });
+    }
+
+    // Student Resilience Survey handling - calculate mean score across all items
+    if (detectedTest === 'RESILIENCE') {
+      let total = 0;
+      let count = 0;
+      
+      questions.forEach(q => {
+        const v = Number(answers[q._id.toString()] || 0);
+        if (!isNaN(v) && v > 0) {
+          total += v;
+          count++;
+        }
+      });
+
+      const meanScore = count > 0 ? total / count : 0;
+      
+      // Determine resilience level and feedback based on mean score
+      let level = '';
+      let interpretation = '';
+      let feedback = '';
+      
+      if (meanScore < 2.0) {
+        level = 'Very Low';
+        interpretation = 'Very Low Resilience';
+        feedback = `What this says about you:
+• You may feel easily overwhelmed by stress or failure
+• Difficult situations may affect your confidence and emotions deeply
+• You may feel like giving up when things go wrong
+
+What you should do:
+• Ask for support: talk to a teacher, counselor, mentor, or trusted adult
+• Do not face challenges alone—seeking help is a strength
+• Practice small daily coping habits (deep breathing, short breaks, writing feelings)
+• Focus on one small goal at a time, not everything together
+
+This score does not define you. It only shows where you need support right now.`;
+      } else if (meanScore < 3.0) {
+        level = 'Low';
+        interpretation = 'Low Resilience';
+        feedback = `What this says about you:
+• You try to cope, but stress or setbacks affect you strongly
+• You may doubt yourself when things don't go as planned
+• You need guidance to build stronger coping skills
+
+What you should do:
+• Learn simple problem-solving steps instead of worrying
+• Build daily routines (sleep, study time, breaks)
+• Talk to someone when you feel stuck—don't wait too long
+• Celebrate small successes to build confidence
+
+Resilience can be learned. With practice, your score can improve.`;
+      } else if (meanScore < 4.0) {
+        level = 'Moderate';
+        interpretation = 'Moderate Resilience';
+        feedback = `What this says about you:
+• You usually manage challenges reasonably well
+• Stress affects you sometimes, especially during exams or pressure situations
+• You have good coping skills but can strengthen them
+
+What you should do:
+• Practice reflection: think about what worked when you handled stress well
+• Improve time management and goal setting
+• Try new challenges to build confidence
+• Maintain balance between academics, rest, and hobbies
+
+You are on the right path—focus on consistency.`;
+      } else {
+        level = 'High';
+        interpretation = 'High Resilience';
+        feedback = `What this says about you:
+• You stay calm and positive during difficulties
+• You bounce back quickly from setbacks
+• You believe in your ability to handle challenges
+
+What you should do:
+• Take on leadership or mentoring roles
+• Challenge yourself with higher goals
+• Help and support peers who struggle
+• Continue healthy habits that support your resilience
+
+Your resilience is a strength—use it to grow and help others.`;
+      }
+
+      const newResult = {
+        test: 'Resilience',
+        meanScore: parseFloat(meanScore.toFixed(2)),
+        questionCount: questions.length,
+        level,
+        interpretation,
+        feedback,
+        completedAt: new Date()
+      };
+      
+      user.testResults.push(newResult);
+      user.hasCompletedTest = true;
+      await user.save();
+
+      return res.json({
+        fullResult: newResult,
+        meanScore: parseFloat(meanScore.toFixed(2)),
+        questionCount: questions.length,
+        level,
+        interpretation,
+        feedback
       });
     }
 
