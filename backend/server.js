@@ -1116,6 +1116,10 @@ app.get('/api/admin/download-all-results', authenticateToken, isAdmin, async (re
       'Aptitude Score': '',
       'Personality Score': '',
       'Personality Interpretation': '',
+      'EI Global Score': '',
+      'EI Interpretation': '',
+      'Resilience Score': '',
+      'Resilience Level': '',
       'Completed Date': ''
     });
 
@@ -1130,6 +1134,10 @@ app.get('/api/admin/download-all-results', authenticateToken, isAdmin, async (re
           'Aptitude Score': '',
           'Personality Score': '',
           'Personality Interpretation': '',
+          'EI Global Score': '',
+          'EI Interpretation': '',
+          'Resilience Score': '',
+          'Resilience Level': '',
           'Completed Date': ''
         });
       } else {
@@ -1137,9 +1145,11 @@ app.get('/api/admin/download-all-results', authenticateToken, isAdmin, async (re
         const riasecResult = student.testResults.find(r => r.test === 'RIASEC');
         const aptitudeResult = student.testResults.find(r => r.test === 'Aptitude');
         const personalityResult = student.testResults.find(r => r.test === 'Personality');
+        const eiResult = student.testResults.find(r => r.test === 'EI');
+        const resilienceResult = student.testResults.find(r => r.test === 'Resilience');
 
         // If any test exists, create consolidated row
-        if (riasecResult || aptitudeResult || personalityResult) {
+        if (riasecResult || aptitudeResult || personalityResult || eiResult || resilienceResult) {
           const riasecCategory = riasecResult 
             ? (riasecResult.topThree && riasecResult.topThree[0] 
               ? riasecResult.topThree[0].split(' - ')[0] 
@@ -1158,6 +1168,26 @@ app.get('/api/admin/download-all-results', authenticateToken, isAdmin, async (re
             ? personalityResult.interpretation || 'N/A'
             : 'Not Completed';
 
+          const eiGlobalScore = eiResult 
+            ? (eiResult.globalScore !== undefined && eiResult.globalScore !== null 
+              ? (typeof eiResult.globalScore === 'number' ? eiResult.globalScore.toFixed(2) : eiResult.globalScore) + ' / 7.0'
+              : 'N/A')
+            : 'Not Completed';
+          
+          const eiInterpretation = eiResult 
+            ? eiResult.interpretation || 'N/A'
+            : 'Not Completed';
+
+          const resilienceScore = resilienceResult 
+            ? (resilienceResult.meanScore !== undefined && resilienceResult.meanScore !== null 
+              ? resilienceResult.meanScore + ' / 5.0'
+              : 'N/A')
+            : 'Not Completed';
+          
+          const resilienceLevel = resilienceResult 
+            ? resilienceResult.level || resilienceResult.interpretation || 'N/A'
+            : 'Not Completed';
+
           const latestDate = student.testResults.length > 0
             ? new Date(student.testResults[student.testResults.length - 1].completedAt).toLocaleString()
             : 'N/A';
@@ -1170,6 +1200,10 @@ app.get('/api/admin/download-all-results', authenticateToken, isAdmin, async (re
             'Aptitude Score': aptitudeScore,
             'Personality Score': personalityScore,
             'Personality Interpretation': personalityInterpretation,
+            'EI Global Score': eiGlobalScore,
+            'EI Interpretation': eiInterpretation,
+            'Resilience Score': resilienceScore,
+            'Resilience Level': resilienceLevel,
             'Completed Date': latestDate
           });
         }
@@ -1188,6 +1222,10 @@ app.get('/api/admin/download-all-results', authenticateToken, isAdmin, async (re
       { wch: 18 }, // Aptitude Score
       { wch: 18 }, // Personality Score
       { wch: 28 }, // Personality Interpretation
+      { wch: 18 }, // EI Global Score
+      { wch: 35 }, // EI Interpretation
+      { wch: 18 }, // Resilience Score
+      { wch: 20 }, // Resilience Level
       { wch: 22 }  // Completed Date
     ];
 
