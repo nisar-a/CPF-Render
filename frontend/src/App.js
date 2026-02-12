@@ -3301,7 +3301,7 @@ function QuestionsManagement() {
                     }}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTest === t.key ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
                   >
-                    {t.key} <span className="text-xs opacity-75">({t.questionCount || 0})</span>
+                    {t.name} <span className="text-xs opacity-75">({t.questionCount || 0})</span>
                   </button>
                 ))}
               </div>
